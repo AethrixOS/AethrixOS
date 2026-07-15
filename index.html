@@ -851,6 +851,85 @@ footer {
   transition: opacity var(--dur-base) var(--ease-precise), transform var(--dur-base) var(--ease-precise);
 }
 .toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+.release-card{
+background:#1b1b1b;
+border:1px solid rgba(255,176,0,.15);
+border-radius:20px;
+padding:40px;
+margin-top:40px;
+}
+
+.release-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:30px;
+flex-wrap:wrap;
+}
+
+.release-badge{
+display:inline-block;
+padding:6px 14px;
+border-radius:999px;
+background:#ffb00022;
+color:#ffb000;
+font-size:.8rem;
+font-weight:700;
+margin-bottom:12px;
+}
+
+.release-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:18px;
+margin:35px 0;
+}
+
+.release-item{
+background:#202020;
+padding:18px;
+border-radius:14px;
+}
+
+.release-item span{
+display:block;
+font-size:.85rem;
+opacity:.65;
+margin-bottom:6px;
+}
+
+.release-item strong{
+font-size:1rem;
+}
+
+.checksum{
+margin-top:30px;
+}
+
+.checksum code{
+display:block;
+padding:14px;
+background:#111;
+border-radius:10px;
+overflow:auto;
+font-family:JetBrains Mono,monospace;
+}
+
+.release-notes{
+margin-top:35px;
+}
+
+.release-notes ul{
+padding-left:20px;
+line-height:2;
+}
+
+.release-actions{
+display:flex;
+gap:16px;
+flex-wrap:wrap;
+margin-top:35px;
+}
 </style>
 </head>
 <body>
@@ -1060,33 +1139,112 @@ footer {
   </section>
 
   <!-- ============================== DOWNLOADS ============================== -->
-  <section id="downloads">
-    <div class="container">
-      <div class="section-head" data-reveal>
-        <div class="eyebrow">Downloads</div>
-        <h2>Get the alpha build</h2>
-        <p>Aethrix is pre-1.0. Expect rough edges — and a changelog for every one of them.</p>
-      </div>
-      <div class="grid grid-3">
-        <div class="card" data-reveal>
-          <h4 class="mono">aethrix-alpha-x86_64.iso</h4>
-          <p>Bootable image for standard 64-bit hardware and most virtual machines.</p>
-          <div class="btn-row" style="margin-top:var(--space-sm)"><a href="#" class="btn btn-primary">Download</a></div>
-        </div>
-        <div class="card" data-reveal>
-          <h4 class="mono">aethrix-alpha-arm64.iso</h4>
-          <p>Image for ARM64 hosts, including Apple Silicon virtualization.</p>
-          <div class="btn-row" style="margin-top:var(--space-sm)"><a href="#" class="btn btn-primary">Download</a></div>
-        </div>
-        <div class="card" data-reveal>
-          <h4 class="mono">Build from source</h4>
-          <p>Clone the repository and run the build script for the latest development tree.</p>
-          <div class="btn-row" style="margin-top:var(--space-sm)"><a href="https://github.com" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a></div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <section class="section" id="downloads">
+  <div class="container">
 
+    <div class="section-head" data-reveal>
+      <div class="eyebrow">Downloads</div>
+      <h2>Aethrix OS Alpha Releases</h2>
+      <p>
+        Download the latest public build of Aethrix OS. Every release includes
+        verification information and release notes.
+      </p>
+    </div>
+
+    <div class="release-card">
+
+      <div class="release-header">
+
+        <div>
+          <span class="release-badge">LATEST</span>
+          <h3>Aethrix OS Alpha 0.1</h3>
+          <p>Experimental Preview Build</p>
+        </div>
+
+        <a href="downloads/AethrixOS-Alpha-0.1.iso"
+   class="btn btn-primary"
+   download>
+   Download Alpha ISO
+</a>
+
+      </div>
+
+      <div class="release-grid">
+
+        <div class="release-item">
+          <span>Architecture</span>
+          <strong>x86_64</strong>
+        </div>
+
+        <div class="release-item">
+          <span>Release Date</span>
+          <strong>July 2026</strong>
+        </div>
+
+        <div class="release-item">
+          <span>File Size</span>
+          <strong>Coming Soon</strong>
+        </div>
+
+        <div class="release-item">
+          <span>Version</span>
+          <strong>Alpha 0.1</strong>
+        </div>
+
+      </div>
+
+      <div class="checksum">
+
+        <h4>SHA256 Verification</h4>
+
+        <code>
+Coming Soon
+        </code>
+
+      </div>
+
+      <div class="release-notes">
+
+        <h4>Release Notes</h4>
+
+        <ul>
+
+          <li>✓ First public Alpha release</li>
+
+          <li>✓ Custom bootloader</li>
+
+          <li>✓ Basic kernel initialization</li>
+
+          <li>✓ Memory management improvements</li>
+
+          <li>✓ Terminal interface</li>
+
+          <li>✓ Early filesystem support</li>
+
+        </ul>
+
+      </div>
+
+      <div class="release-actions">
+
+        <a href="#" class="btn btn-primary">
+          Download ISO
+        </a>
+
+        <a href="#" class="btn btn-secondary">
+          GitHub Release
+        </a>
+
+        <a href="#" class="btn btn-secondary">
+          Source Code
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
   <!-- ============================== DOCUMENTATION ============================== -->
   <section class="section-alt" id="documentation">
     <div class="container">
