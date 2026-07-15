@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aethrix OS — Engineered for the Fearless</title>
+<meta name="description" content="Aethrix OS is an open-source operating system built from scratch — focused on performance, security, modularity, and elegant engineering.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Aethrix OS — Engineered for the Fearless">
+<meta property="og:description" content="An open-source operating system built from scratch to explore modern OS architecture: performance, security, modularity, elegant engineering.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/images/og-cover.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Aethrix OS — Engineered for the Fearless">
+<meta name="twitter:description" content="An open-source operating system built from scratch. Performance. Security. Modularity.">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Aethrix OS",
+  "applicationCategory": "OperatingSystem",
+  "operatingSystem": "Aethrix",
+  "description": "An open-source operating system built from scratch to explore modern OS architecture.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%226%22 fill=%22%23121212%22/><path d=%22M16 7 L24 24 L20 24 L16 15 L12 24 L8 24 Z%22 fill=%22%23FFB000%22/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+:root {
+  --bg:              #121212;
+  --surface:         #1B1B1B;
+  --card:            #202020;
+  --surface-2:       #2B2B2B;
+  --border:          #353535;
+  --border-soft:     rgba(255, 255, 255, 0.06);
+
+  --amber-neon:      #FFB000;
+  --amber-bright:    #FFC107;
+  --amber-glow:      #FFD54F;
+  --amber-highlight: #FFE082;
+  --amber-dim:       rgba(255, 176, 0, 0.12);
+  --amber-line:      rgba(255, 176, 0, 0.35);
+
+  --text:            #F5F5F5;
+  --text-secondary:  #BDBDBD;
+  --text-disabled:   #757575;
+
+  --success:         #22C55E;
+  --warning:         #F59E0B;
+  --danger:          #EF4444;
+
+  --font-display:    'Space Grotesk', sans-serif;
+  --font-body:       'Inter', sans-serif;
+  --font-mono:       'JetBrains Mono', monospace;
+
+  --fs-3xl:  clamp(2.75rem, 6vw, 5.5rem);
+  --fs-2xl:  clamp(2rem, 4vw, 3.25rem);
+  --fs-xl:   clamp(1.5rem, 2.4vw, 2.15rem);
+  --fs-lg:   1.375rem;
+  --fs-md:   1.0625rem;
+  --fs-base: 0.9375rem;
+  --fs-sm:   0.8125rem;
+  --fs-xs:   0.75rem;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-sm:  1rem;
+  --space-md:  1.5rem;
+  --space-lg:  2.5rem;
+  --space-xl:  4rem;
+  --space-2xl: 6.5rem;
+  --space-3xl: 10rem;
+
+  --container-w: 1240px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --ease-precise: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft:    cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:  150ms;
+  --dur-base:  280ms;
+  --dur-slow:  520ms;
+
+  --shadow-card:  0 1px 0 rgba(255,255,255,0.03) inset, 0 12px 30px rgba(0,0,0,0.35);
+  --shadow-glow:  0 0 0 1px var(--amber-line), 0 0 24px rgba(255,176,0,0.18);
+  --shadow-glow-soft: 0 0 24px rgba(255,176,0,0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; }
+}
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+@media (hover: none) { body { cursor: auto; } }
+
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+button, input { font-family: inherit; color: inherit; }
+button { cursor: none; border: none; background: none; }
+@media (hover: none) { button { cursor: pointer; } }
+
+::selection { background: var(--amber-dim); color: var(--amber-highlight); }
+
+:focus-visible {
+  outline: 2px solid var(--amber-neon);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--surface-2); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+h1 { font-size: var(--fs-3xl); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-xl); }
+h4 { font-size: var(--fs-lg); font-weight: 500; }
+p { color: var(--text-secondary); }
+
+.mono { font-family: var(--font-mono); letter-spacing: 0.01em; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--amber-neon);
+  margin-bottom: var(--space-sm);
+}
+.eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--amber-neon);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--amber-neon);
+}
+
+.section-head { max-width: 640px; margin-bottom: var(--space-2xl); }
+.section-head p { margin-top: var(--space-sm); font-size: var(--fs-md); }
+
+.container { width: 100%; max-width: var(--container-w); margin-inline: auto; padding-inline: var(--space-lg); }
+@media (max-width: 640px) { .container { padding-inline: var(--space-sm); } }
+
+section { position: relative; padding-block: var(--space-2xl); }
+.section-alt { background: var(--surface); border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
+
+/* ==========================================================================
+   3. BUTTONS
+   ========================================================================== */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: 0.85rem 1.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  transition: transform var(--dur-fast) var(--ease-precise),
+              box-shadow var(--dur-base) var(--ease-soft),
+              border-color var(--dur-base) var(--ease-soft),
+              background var(--dur-base) var(--ease-soft);
+}
+.btn:active { transform: translateY(0); }
+.btn-primary { background: var(--amber-neon); color: #121212; border-color: var(--amber-neon); font-weight: 600; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255, 176, 0, 0.28); background: var(--amber-bright); }
+.btn-ghost { background: transparent; color: var(--text); }
+.btn-ghost:hover { transform: translateY(-2px); border-color: var(--amber-line); box-shadow: var(--shadow-glow-soft); color: var(--amber-highlight); }
+.btn-row { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+
+/* ==========================================================================
+   4. GRID / REVEAL
+   ========================================================================== */
+.grid { display: grid; gap: var(--space-md); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--dur-slow) var(--ease-precise), transform var(--dur-slow) var(--ease-precise);
+}
+[data-reveal].is-visible { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { [data-reveal] { opacity: 1; transform: none; transition: none; } }
+
+/* ==========================================================================
+   5. CURSOR
+   ========================================================================== */
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 8px; height: 8px;
+  background: var(--amber-neon);
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px rgba(255,176,0,0.6);
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width var(--dur-fast) var(--ease-soft), height var(--dur-fast) var(--ease-soft),
+              background var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
+  will-change: transform;
+}
+.cursor-dot.is-active {
+  width: 30px; height: 30px;
+  background: transparent;
+  border: 1.5px solid var(--amber-glow);
+  box-shadow: 0 0 20px 4px rgba(255,213,79,0.35);
+}
+@media (hover: none) { .cursor-dot { display: none; } }
+
+/* ==========================================================================
+   6. BACKGROUND FX (grid + particles + noise)
+   ========================================================================== */
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-grid {
+  position: absolute;
+  inset: -1px;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+}
+.bg-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#particle-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bg-glow {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  width: 900px; height: 900px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255,176,0,0.08) 0%, transparent 65%);
+  filter: blur(20px);
+}
+
+main, header, footer { position: relative; z-index: 1; }
+
+/* ==========================================================================
+   7. LOADER
+   ========================================================================== */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 600ms var(--ease-precise), visibility 600ms var(--ease-precise);
+}
+.loader.is-hidden { opacity: 0; visibility: hidden; }
+.loader-inner { width: min(420px, 86vw); text-align: center; }
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin-bottom: var(--space-lg);
+}
+.loader-logo span { color: var(--amber-neon); }
+.loader-bar-track {
+  width: 100%;
+  height: 3px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+}
+.loader-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--amber-neon), var(--amber-glow));
+  box-shadow: 0 0 12px rgba(255,176,0,0.5);
+  transition: width 180ms linear;
+}
+.loader-status {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-disabled);
+  letter-spacing: 0.04em;
+  min-height: 1.2em;
+}
+.loader-status .ok { color: var(--success); }
+
+/* ==========================================================================
+   8. NAVIGATION
+   ========================================================================== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  border-bottom: 1px solid transparent;
+  transition: background var(--dur-base) var(--ease-soft), border-color var(--dur-base) var(--ease-soft), backdrop-filter var(--dur-base);
+}
+.nav.is-scrolled {
+  background: rgba(18,18,18,0.78);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--border-soft);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-sm);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.nav-logo-mark {
+  width: 22px; height: 22px;
+  color: var(--amber-neon);
+}
+.nav-links {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+}
+.nav-links a {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  position: relative;
+  padding-block: 4px;
+  transition: color var(--dur-fast) var(--ease-soft);
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 0; height: 1px;
+  background: var(--amber-neon);
+  transition: width var(--dur-base) var(--ease-precise);
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a:hover::after { width: 100%; }
+.nav-cta { display: flex; align-items: center; gap: var(--space-sm); }
+.nav-toggle { display: none; }
+
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+  .nav-cta .btn-ghost { display: none; }
+}
+
+/* ==========================================================================
+   9. HERO
+   ========================================================================== */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-top: 6rem;
+}
+.hero-inner { max-width: 780px; }
+.hero-logo {
+  font-family: var(--font-display);
+  font-size: var(--fs-3xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-sm);
+}
+.hero-logo .accent { color: var(--amber-neon); }
+.hero-tagline {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  color: var(--amber-highlight);
+  margin-bottom: var(--space-md);
+  letter-spacing: 0.01em;
+}
+.hero-desc {
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  max-width: 620px;
+  margin-bottom: var(--space-lg);
+}
+.hero-meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-soft);
+}
+.hero-meta div { display: flex; flex-direction: column; gap: 4px; }
+.hero-meta .val { font-family: var(--font-mono); color: var(--text); font-size: var(--fs-md); }
+.hero-meta .lbl { font-size: var(--fs-xs); color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.scroll-cue {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xs);
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+}
+.scroll-cue .line {
+  width: 1px; height: 32px;
+  background: linear-gradient(var(--amber-neon), transparent);
+  animation: scrollcue 1.8s var(--ease-soft) infinite;
+}
+@keyframes scrollcue {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.4; }
+}
+
+/* ==========================================================================
+   10. CARDS / FEATURES
+   ========================================================================== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--dur-base) var(--ease-precise), border-color var(--dur-base) var(--ease-soft), box-shadow var(--dur-base) var(--ease-soft);
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--amber-line);
+  box-shadow: var(--shadow-glow), var(--shadow-card);
+}
+.card-icon {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--amber-dim);
+  color: var(--amber-neon);
+  margin-bottom: var(--space-sm);
+}
+.card-icon svg { width: 20px; height: 20px; }
+.card h4 { margin-bottom: var(--space-2xs); }
+.card p { font-size: var(--fs-sm); }
+
+/* ==========================================================================
+   11. ARCHITECTURE DIAGRAM
+   ========================================================================== */
+.arch-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  max-width: 560px;
+  margin-inline: auto;
+}
+.arch-block {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  cursor: none;
+  transition: border-color var(--dur-base) var(--ease-soft), box-shadow var(--dur-base) var(--ease-soft), transform var(--dur-base) var(--ease-precise);
+}
+@media (hover: none) { .arch-block { cursor: pointer; } }
+.arch-block:hover, .arch-block.is-active {
+  border-color: var(--amber-line);
+  box-shadow: var(--shadow-glow);
+  transform: translateX(4px);
+}
+.arch-block-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.arch-index {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-disabled);
+}
+.arch-name { font-family: var(--font-display); font-weight: 600; font-size: var(--fs-md); }
+.arch-desc {
+  font-size: var(--fs-xs);
+  color: var(--text-disabled);
+  max-width: 200px;
+  text-align: right;
+}
+.arch-connector {
+  width: 1px;
+  height: 22px;
+  background: linear-gradient(var(--border), var(--amber-line));
+}
+
+/* ==========================================================================
+   12. ROADMAP TIMELINE
+   ========================================================================== */
+.roadmap-track {
+  position: relative;
+  padding-left: var(--space-lg);
+}
+.roadmap-track::before {
+  content: '';
+  position: absolute;
+  left: 5px; top: 6px; bottom: 6px;
+  width: 1px;
+  background: var(--border);
+}
+.roadmap-item {
+  position: relative;
+  padding-bottom: var(--space-lg);
+}
+.roadmap-item:last-child { padding-bottom: 0; }
+.roadmap-item::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--space-lg) + 1px);
+  top: 6px;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  transition: border-color var(--dur-base), box-shadow var(--dur-base);
+}
+.roadmap-item.is-done::before {
+  border-color: var(--amber-neon);
+  box-shadow: 0 0 8px rgba(255,176,0,0.6);
+  background: var(--amber-neon);
+}
+.roadmap-status {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.roadmap-item.is-done .roadmap-status { color: var(--amber-neon); }
+.roadmap-item:not(.is-done) .roadmap-status { color: var(--text-disabled); }
+.roadmap-item h4 { margin-block: 4px; }
+.roadmap-item.is-done h4 { color: var(--text); }
+.roadmap-item:not(.is-done) h4 { color: var(--text-disabled); }
+.roadmap-item p { font-size: var(--fs-sm); }
+
+/* ==========================================================================
+   13. TERMINAL
+   ========================================================================== */
+.terminal-window {
+  background: #0E0E0E;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  max-width: 720px;
+  margin-inline: auto;
+}
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.terminal-dots { display: flex; gap: 6px; }
+.terminal-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--surface-2); }
+.terminal-title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-disabled);
+  margin-inline: auto;
+}
+.terminal-body {
+  padding: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  min-height: 320px;
+  max-height: 420px;
+  overflow-y: auto;
+  color: var(--text-secondary);
+}
+.terminal-body .line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-word; }
+.terminal-body .prompt { color: var(--amber-neon); }
+.terminal-body .out-ok { color: var(--success); }
+.terminal-body .out-amber { color: var(--amber-glow); }
+.terminal-input-row { display: flex; align-items: center; gap: var(--space-2xs); }
+.terminal-input-row .prompt { flex-shrink: 0; }
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  caret-color: var(--amber-neon);
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 7px; height: 14px;
+  background: var(--amber-neon);
+  animation: blink 1s step-end infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ==========================================================================
+   14. GALLERY / COMMUNITY / FAQ / CONTACT
+   ========================================================================== */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+@media (max-width: 900px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .gallery-grid { grid-template-columns: 1fr; } }
+.gallery-item {
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: border-color var(--dur-base), transform var(--dur-base) var(--ease-precise);
+}
+.gallery-item:hover { border-color: var(--amber-line); transform: translateY(-3px); }
+.gallery-item svg { width: 46%; opacity: 0.9; }
+.gallery-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: var(--space-xs) var(--space-sm);
+  background: linear-gradient(transparent, rgba(0,0,0,0.65));
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+
+.community-grid { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 900px) { .community-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .community-grid { grid-template-columns: 1fr; } }
+.community-card {
+  text-align: center;
+  padding: var(--space-lg) var(--space-md);
+}
+.community-card .count { font-family: var(--font-mono); font-size: var(--fs-xl); color: var(--amber-neon); display: block; margin-bottom: 4px; }
+.community-card .label { font-size: var(--fs-xs); color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.faq-item {
+  border-bottom: 1px solid var(--border-soft);
+}
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-md);
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 500;
+}
+.faq-icon {
+  width: 20px; height: 20px;
+  flex-shrink: 0;
+  color: var(--amber-neon);
+  transition: transform var(--dur-base) var(--ease-precise);
+}
+.faq-item.is-open .faq-icon { transform: rotate(45deg); }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--dur-slow) var(--ease-precise), padding-bottom var(--dur-base);
+}
+.faq-item.is-open .faq-answer { max-height: 240px; padding-bottom: var(--space-md); }
+.faq-answer p { font-size: var(--fs-sm); max-width: 640px; }
+
+.contact-form {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: 520px;
+}
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: var(--fs-xs); color: var(--text-disabled); text-transform: uppercase; letter-spacing: 0.06em; }
+.form-field input, .form-field textarea {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--text);
+  transition: border-color var(--dur-base) var(--ease-soft), box-shadow var(--dur-base) var(--ease-soft);
+}
+.form-field input:focus, .form-field textarea:focus {
+  border-color: var(--amber-neon);
+  box-shadow: 0 0 0 3px var(--amber-dim);
+  outline: none;
+}
+.form-field textarea { resize: vertical; min-height: 120px; }
+.form-note { font-size: var(--fs-xs); color: var(--text-disabled); }
+
+/* ==========================================================================
+   15. FOOTER
+   ========================================================================== */
+footer {
+  border-top: 1px solid var(--border-soft);
+  padding-block: var(--space-xl) var(--space-lg);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+@media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+.footer-brand .nav-logo { margin-bottom: var(--space-sm); }
+.footer-brand p { font-size: var(--fs-sm); max-width: 280px; }
+.footer-col h5 {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-disabled);
+  margin-bottom: var(--space-sm);
+}
+.footer-col ul { display: flex; flex-direction: column; gap: var(--space-2xs); }
+.footer-col a { font-size: var(--fs-sm); color: var(--text-secondary); transition: color var(--dur-fast); }
+.footer-col a:hover { color: var(--amber-neon); }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border-soft);
+  font-size: var(--fs-xs);
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+}
+@media (max-width: 640px) { .footer-bottom { flex-direction: column; gap: var(--space-sm); text-align: center; } }
+
+/* ==========================================================================
+   16. DEV CONSOLE EASTER EGG
+   ========================================================================== */
+.dev-console {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(9,9,9,0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-soft);
+}
+.dev-console.is-open { opacity: 1; pointer-events: auto; }
+.dev-console-panel {
+  font-family: var(--font-mono);
+  color: var(--amber-glow);
+  font-size: var(--fs-sm);
+  text-align: center;
+  max-width: 480px;
+  padding: var(--space-lg);
+  border: 1px solid var(--amber-line);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glow);
+}
+.dev-console-panel h3 { color: var(--amber-highlight); margin-bottom: var(--space-sm); font-family: var(--font-mono); }
+
+/* Konami toast */
+.toast {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--card);
+  border: 1px solid var(--amber-line);
+  box-shadow: var(--shadow-glow);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--amber-highlight);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-precise), transform var(--dur-base) var(--ease-precise);
+}
+.toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ============================== LOADER ============================== -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-logo">AETHR<span>I</span>X</div>
+    <div class="loader-bar-track"><div class="loader-bar-fill" id="loaderBar"></div></div>
+    <div class="loader-status mono" id="loaderStatus">Loading Bootloader</div>
+  </div>
+</div>
+
+<!-- ============================== CURSOR ============================== -->
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- ============================== BACKGROUND ============================== -->
+<div class="bg-fx" aria-hidden="true">
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+  <canvas id="particle-canvas"></canvas>
+  <div class="bg-noise"></div>
+</div>
+
+<!-- ============================== NAV ============================== -->
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="#home" class="nav-logo">
+      <svg class="nav-logo-mark" viewBox="0 0 32 32" fill="currentColor"><path d="M16 4 L27 27 L21.5 27 L16 15.5 L10.5 27 L5 27 Z"/></svg>
+      AETHRIX
+    </a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#features">Features</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#terminal">Terminal</a>
+      <a href="#community">Community</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#contact" class="btn btn-ghost">Contact</a>
+      <a href="#downloads" class="btn btn-primary">Download Alpha</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ============================== HERO ============================== -->
+  <section class="hero" id="home">
+    <div class="container hero-inner">
+      <div class="eyebrow">v0.3.1-alpha · active development</div>
+      <h1 class="hero-logo">AETHRIX <span class="accent">OS</span></h1>
+      <p class="hero-tagline mono">Engineered for the Fearless.</p>
+      <p class="hero-desc">Aethrix OS is an open-source operating system built from scratch to explore modern operating system architecture with a focus on performance, security, modularity, and elegant engineering.</p>
+      <div class="btn-row">
+        <a href="#downloads" class="btn btn-primary">Download Alpha</a>
+        <a href="#documentation" class="btn btn-ghost">Documentation</a>
+        <a href="https://github.com" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div class="hero-meta">
+        <div><span class="val mono">7</span><span class="lbl">Subsystems built</span></div>
+        <div><span class="val mono">100%</span><span class="lbl">From scratch</span></div>
+        <div><span class="val mono">MIT</span><span class="lbl">License</span></div>
+      </div>
+    </div>
+    <div class="scroll-cue"><span>SCROLL</span><span class="line"></span></div>
+  </section>
+
+  <!-- ============================== ABOUT / VISION ============================== -->
+  <section id="about">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">About</div>
+        <h2>Not a distribution. A foundation.</h2>
+        <p>Most operating systems people call "new" are Linux with a different wallpaper. Aethrix is not that. Every subsystem — the bootloader, the memory manager, the scheduler — is written from first principles, so each decision can be examined instead of inherited.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M9 9h6v6H9z"/></svg></div>
+          <h4>Built from scratch</h4>
+          <p>No forked kernel, no borrowed init system. The architecture is Aethrix's own, designed to be read and understood.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"/></svg></div>
+          <h4>Security by design</h4>
+          <p>Isolation and least-privilege are decided at the architecture stage, not patched in after a release.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div>
+          <h4>Documented in the open</h4>
+          <p>Every subsystem ships with the reasoning behind it, so contributors can extend it without guessing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== FEATURES ============================== -->
+  <section class="section-alt" id="features">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Features</div>
+        <h2>Engineering choices, not marketing bullets</h2>
+        <p>Six commitments that shape every design decision inside Aethrix.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
+          <h4>Performance</h4>
+          <p>A scheduler and memory manager tuned for predictable latency, not just peak throughput.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"/></svg></div>
+          <h4>Security</h4>
+          <p>Sandboxed drivers and a minimal trusted computing base, enforced at the kernel boundary.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M2 12h20"/></svg></div>
+          <h4>Open source</h4>
+          <p>Every line of the kernel and userland tooling is public, versioned, and reviewable under MIT.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg></div>
+          <h4>Modular</h4>
+          <p>Subsystems communicate through defined interfaces, so a driver or filesystem can be swapped, not rewired.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 9l-5 3 5 3M16 9l5 3-5 3M13 5l-2 14"/></svg></div>
+          <h4>Developer friendly</h4>
+          <p>A documented syscall surface, native terminal tooling, and build scripts that don't fight you.</p>
+        </div>
+        <div class="card" data-reveal>
+          <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg></div>
+          <h4>Modern architecture</h4>
+          <p>Designed around today's hardware — multi-core scheduling and modern filesystem semantics from day one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== ARCHITECTURE ============================== -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Architecture</div>
+        <h2>How a system call travels</h2>
+        <p>Eight layers, each with a single responsibility. Hover or tap a block to see what it does.</p>
+      </div>
+      <div class="arch-diagram" data-reveal id="archDiagram">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== ROADMAP ============================== -->
+  <section class="section-alt" id="roadmap">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Roadmap</div>
+        <h2>Alpha to version 1.0</h2>
+        <p>Completed milestones are marked amber. What's ahead stays gray until it's real.</p>
+      </div>
+      <div class="roadmap-track" data-reveal>
+        <div class="roadmap-item is-done">
+          <span class="roadmap-status mono">Completed</span>
+          <h4>Bootloader</h4>
+          <p>Two-stage boot with hardware handoff into protected mode.</p>
+        </div>
+        <div class="roadmap-item is-done">
+          <span class="roadmap-status mono">Completed</span>
+          <h4>Kernel</h4>
+          <p>Monolithic core with a modular subsystem interface.</p>
+        </div>
+        <div class="roadmap-item is-done">
+          <span class="roadmap-status mono">Completed</span>
+          <h4>Memory manager</h4>
+          <p>Paging, virtual address spaces, and a physical frame allocator.</p>
+        </div>
+        <div class="roadmap-item is-done">
+          <span class="roadmap-status mono">Completed</span>
+          <h4>Filesystem</h4>
+          <p>Journaled native filesystem with a POSIX-compatible layer.</p>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-status mono">In progress</span>
+          <h4>Networking</h4>
+          <p>TCP/IP stack and a socket interface for userland services.</p>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-status mono">Planned</span>
+          <h4>Drivers</h4>
+          <p>A stable driver framework for storage, input, and display.</p>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-status mono">Planned</span>
+          <h4>GUI</h4>
+          <p>Compositor and windowing system built on the display driver layer.</p>
+        </div>
+        <div class="roadmap-item">
+          <span class="roadmap-status mono">Planned</span>
+          <h4>Version 1.0</h4>
+          <p>First stable release, frozen syscall surface, long-term support.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DOWNLOADS ============================== -->
+  <section id="downloads">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Downloads</div>
+        <h2>Get the alpha build</h2>
+        <p>Aethrix is pre-1.0. Expect rough edges — and a changelog for every one of them.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card" data-reveal>
+          <h4 class="mono">aethrix-alpha-x86_64.iso</h4>
+          <p>Bootable image for standard 64-bit hardware and most virtual machines.</p>
+          <div class="btn-row" style="margin-top:var(--space-sm)"><a href="#" class="btn btn-primary">Download</a></div>
+        </div>
+        <div class="card" data-reveal>
+          <h4 class="mono">aethrix-alpha-arm64.iso</h4>
+          <p>Image for ARM64 hosts, including Apple Silicon virtualization.</p>
+          <div class="btn-row" style="margin-top:var(--space-sm)"><a href="#" class="btn btn-primary">Download</a></div>
+        </div>
+        <div class="card" data-reveal>
+          <h4 class="mono">Build from source</h4>
+          <p>Clone the repository and run the build script for the latest development tree.</p>
+          <div class="btn-row" style="margin-top:var(--space-sm)"><a href="https://github.com" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DOCUMENTATION ============================== -->
+  <section class="section-alt" id="documentation">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Documentation</div>
+        <h2>Read before you build</h2>
+        <p>Architecture references, syscall tables, and contribution guides.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card" data-reveal><h4>Getting started</h4><p>Build dependencies, toolchain setup, and your first boot in QEMU.</p></div>
+        <div class="card" data-reveal><h4>Kernel internals</h4><p>Scheduler design, memory model, and the subsystem interface contract.</p></div>
+        <div class="card" data-reveal><h4>Contributing</h4><p>Code style, commit conventions, and how patches move through review.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DEV LOGS ============================== -->
+  <section id="devlogs">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Development Logs</div>
+        <h2>Written as it happens</h2>
+        <p>Short, dated notes from the kernel tree — no polish, just progress.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card" data-reveal><span class="mono" style="font-size:var(--fs-xs);color:var(--text-disabled)">2026.06.02</span><h4 style="margin-top:6px">Journaling filesystem lands</h4><p>Crash-consistent writes, verified against a fault-injection harness.</p></div>
+        <div class="card" data-reveal><span class="mono" style="font-size:var(--fs-xs);color:var(--text-disabled)">2026.04.18</span><h4 style="margin-top:6px">Scheduler rewrite</h4><p>Moved from round-robin to a multi-level feedback queue.</p></div>
+        <div class="card" data-reveal><span class="mono" style="font-size:var(--fs-xs);color:var(--text-disabled)">2026.02.27</span><h4 style="margin-top:6px">Paging stabilized</h4><p>Fixed a long-standing TLB invalidation race under SMP.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== TERMINAL ============================== -->
+  <section class="section-alt" id="terminal">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Terminal</div>
+        <h2>Try it before you install it</h2>
+        <p>A small simulated shell. Type <span class="mono" style="color:var(--amber-neon)">help</span> to see what it knows.</p>
+      </div>
+      <div class="terminal-window" data-reveal id="terminalWindow">
+        <div class="terminal-titlebar">
+          <div class="terminal-dots"><span></span><span></span><span></span></div>
+          <div class="terminal-title">user@aethrix: ~</div>
+        </div>
+        <div class="terminal-body" id="terminalBody" tabindex="0">
+          <div class="line">Aethrix OS simulated shell — type <span class="prompt">help</span> to begin.</div>
+          <div class="terminal-input-row">
+            <span class="prompt">user@aethrix:~$</span>
+            <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false" aria-label="Terminal input">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== GALLERY ============================== -->
+  <section id="gallery">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Gallery</div>
+        <h2>The interface, in progress</h2>
+        <p>Early compositor and shell work. Placeholder frames until the GUI layer ships.</p>
+      </div>
+      <div class="gallery-grid" data-reveal>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--border)"><rect x="3" y="4" width="18" height="14" rx="1"/><path d="M3 8h18"/></svg><div class="gallery-caption mono">Boot sequence</div></div>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--border)"><rect x="4" y="4" width="7" height="7"/><rect x="13" y="4" width="7" height="7"/><rect x="4" y="13" width="7" height="7"/><rect x="13" y="13" width="7" height="7"/></svg><div class="gallery-caption mono">Compositor grid</div></div>
+        <div class="gallery-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="color:var(--border)"><path d="M4 18V6l8 6 8-6v12"/></svg><div class="gallery-caption mono">Shell prompt</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== COMMUNITY ============================== -->
+  <section class="section-alt" id="community">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Community</div>
+        <h2>Built in the open, by people who show their work</h2>
+        <p>Aethrix has no company behind it — just contributors reviewing each other's kernel patches.</p>
+      </div>
+      <div class="grid community-grid" data-reveal>
+        <div class="card community-card"><span class="count mono">210</span><span class="label">Contributors</span></div>
+        <div class="card community-card"><span class="count mono">1.2k</span><span class="label">GitHub stars</span></div>
+        <div class="card community-card"><span class="count mono">640</span><span class="label">Commits, alpha branch</span></div>
+        <div class="card community-card"><span class="count mono">38</span><span class="label">Open subsystem RFCs</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== FAQ ============================== -->
+  <section id="faq">
+    <div class="container" style="max-width:820px">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">FAQ</div>
+        <h2>Questions worth answering plainly</h2>
+      </div>
+      <div data-reveal id="faqList">
+        <div class="faq-item">
+          <button class="faq-question"><span>Is Aethrix based on Linux?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-answer"><p>No. The kernel, bootloader, and memory manager are original code. Aethrix does not share a codebase with Linux, BSD, or any existing kernel.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question"><span>Can I run it today?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-answer"><p>Yes, in a virtual machine. The alpha ISO boots under QEMU and most hypervisors. Bare-metal driver support is still in progress.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question"><span>Is it production ready?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-answer"><p>Not yet. This is a pre-1.0 alpha for developers who want to read, run, and contribute to a kernel built from first principles.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question"><span>How can I contribute?</span><svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+          <div class="faq-answer"><p>Start with an open RFC on GitHub. Subsystem interfaces are documented so a new contributor can find a safe, contained place to start.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CONTACT ============================== -->
+  <section class="section-alt" id="contact">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">Contact</div>
+        <h2>Reach the core team</h2>
+        <p>For security disclosures, use the private channel linked in the repository — not this form.</p>
+      </div>
+      <form class="contact-form" data-reveal onsubmit="return false;">
+        <div class="form-field"><label for="cname">Name</label><input id="cname" type="text" placeholder="Your name"></div>
+        <div class="form-field"><label for="cemail">Email</label><input id="cemail" type="email" placeholder="you@example.com"></div>
+        <div class="form-field"><label for="cmsg">Message</label><textarea id="cmsg" placeholder="What are you building, or what's broken?"></textarea></div>
+        <div class="btn-row"><button type="submit" class="btn btn-primary">Send message</button></div>
+        <p class="form-note">This is a static demo form — messages aren't transmitted yet.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#home" class="nav-logo">
+          <svg class="nav-logo-mark" viewBox="0 0 32 32" fill="currentColor"><path d="M16 4 L27 27 L21.5 27 L16 15.5 L10.5 27 L5 27 Z"/></svg>
+          AETHRIX
+        </a>
+        <p>An open-source operating system built from scratch. Engineered for the fearless.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Project</h5>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#roadmap">Roadmap</a></li>
+          <li><a href="#devlogs">Dev logs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="#downloads">Downloads</a></li>
+          <li><a href="#documentation">Documentation</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Community</h5>
+        <ul>
+          <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="#community">Contributors</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Aethrix OS. Released under MIT.</span>
+      <span>Built with precision, not frameworks.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================== DEV CONSOLE EASTER EGG ============================== -->
+<div class="dev-console" id="devConsole">
+  <div class="dev-console-panel">
+    <h3>&gt; DEVELOPER CONSOLE</h3>
+    <p>You found it. Aethrix is built by people who read the source.<br>Press <strong>Esc</strong> to close.</p>
+  </div>
+</div>
+
+<!-- Konami toast -->
+<div class="toast" id="konamiToast">Developer Mode Enabled</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ==========================================================================
+     LOADER
+     Simulated boot sequence, then fades into the homepage.
+     ========================================================================== */
+  function initLoader() {
+    var loader = document.getElementById('loader');
+    var bar = document.getElementById('loaderBar');
+    var status = document.getElementById('loaderStatus');
+    var steps = [
+      'Loading Bootloader',
+      'Loading Kernel',
+      'Loading Memory Manager',
+      'Loading Filesystem',
+      'Launching Interface',
+      'Ready.'
+    ];
+    var i = 0;
+    function next() {
+      if (i >= steps.length) {
+        setTimeout(function () {
+          loader.classList.add('is-hidden');
+          document.body.style.overflow = '';
+        }, 250);
+        return;
+      }
+      status.textContent = steps[i];
+      if (steps[i] === 'Ready.') status.innerHTML = '<span class="out-ok" style="color:var(--success)">Ready.</span>';
+      bar.style.width = Math.round(((i + 1) / steps.length) * 100) + '%';
+      i++;
+      setTimeout(next, i === steps.length ? 300 : 380);
+    }
+    document.body.style.overflow = 'hidden';
+    setTimeout(next, 260);
+  }
+
+  /* ==========================================================================
+     CURSOR
+     Amber dot that follows the pointer and expands on interactive elements.
+     ========================================================================== */
+  function initCursor() {
+    if (window.matchMedia('(hover: none)').matches) return;
+    var dot = document.getElementById('cursorDot');
+    var x = 0, y = 0, cx = 0, cy = 0;
+    window.addEventListener('mousemove', function (e) { x = e.clientX; y = e.clientY; });
+    function raf() {
+      cx += (x - cx) * 0.35;
+      cy += (y - cy) * 0.35;
+      dot.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)';
+      requestAnimationFrame(raf);
+    }
+    raf();
+    var interactive = 'a, button, input, textarea, .arch-block, .card';
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest(interactive)) dot.classList.add('is-active');
+    });
+    document.addEventListener('mouseout', function (e) {
+      if (e.target.closest(interactive)) dot.classList.remove('is-active');
+    });
+  }
+
+  /* ==========================================================================
+     PARTICLES
+     Sparse floating amber points, calm and slow. Pure canvas + rAF.
+     ========================================================================== */
+  function initParticles() {
+    var canvas = document.getElementById('particle-canvas');
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var count = window.innerWidth < 700 ? 18 : 34;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = document.documentElement.scrollHeight;
+    }
+    function makeParticles() {
+      particles = [];
+      for (var n = 0; n < count; n++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.4 + 0.4,
+          vy: -(Math.random() * 0.12 + 0.03),
+          vx: (Math.random() - 0.5) * 0.05,
+          a: Math.random() * 0.5 + 0.15
+        });
+      }
+    }
+    resize();
+    makeParticles();
+    window.addEventListener('resize', function () { resize(); makeParticles(); });
+
+    if (reduced) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(function (p) {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255,176,0,' + p.a + ')';
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      return;
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var n = 0; n < particles.length; n++) {
+        var p = particles[n];
+        p.y += p.vy;
+        p.x += p.vx;
+        if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(255,176,0,' + p.a + ')';
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ==========================================================================
+     NAV — sticky background swap on scroll
+     ========================================================================== */
+  function initNav() {
+    var nav = document.getElementById('nav');
+    function onScroll() {
+      if (window.scrollY > 24) nav.classList.add('is-scrolled');
+      else nav.classList.remove('is-scrolled');
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ==========================================================================
+     SCROLL REVEAL — IntersectionObserver
+     ========================================================================== */
+  function initReveal() {
+    var items = document.querySelectorAll('[data-reveal]');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('is-visible'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    items.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ==========================================================================
+     ARCHITECTURE DIAGRAM — build blocks + hover/tap detail
+     ========================================================================== */
+  function initArchDiagram() {
+    var data = [
+      { name: 'Bootloader', desc: 'Two-stage boot, hands off to protected mode.' },
+      { name: 'Kernel', desc: 'Core scheduling, syscalls, subsystem contracts.' },
+      { name: 'Memory Manager', desc: 'Paging, virtual address spaces, frame allocation.' },
+      { name: 'Scheduler', desc: 'Multi-level feedback queue across cores.' },
+      { name: 'Filesystem', desc: 'Journaled, crash-consistent, POSIX-compatible.' },
+      { name: 'Drivers', desc: 'Sandboxed modules for storage, input, display.' },
+      { name: 'Networking', desc: 'TCP/IP stack and userland socket interface.' },
+      { name: 'GUI', desc: 'Compositor and windowing on the display driver.' }
+    ];
+    var root = document.getElementById('archDiagram');
+    var html = '';
+    data.forEach(function (item, idx) {
+      html += '<div class="arch-block" data-idx="' + idx + '" tabindex="0">' +
+        '<div class="arch-block-label"><span class="arch-index mono">0' + (idx + 1) + '</span><span class="arch-name">' + item.name + '</span></div>' +
+        '<span class="arch-desc">' + item.desc + '</span>' +
+        '</div>';
+      if (idx < data.length - 1) html += '<div class="arch-connector"></div>';
+    });
+    root.innerHTML = html;
+
+    var blocks = root.querySelectorAll('.arch-block');
+    blocks.forEach(function (b) {
+      b.addEventListener('mouseenter', function () { b.classList.add('is-active'); });
+      b.addEventListener('mouseleave', function () { b.classList.remove('is-active'); });
+      b.addEventListener('focus', function () { b.classList.add('is-active'); });
+      b.addEventListener('blur', function () { b.classList.remove('is-active'); });
+    });
+  }
+
+  /* ==========================================================================
+     FAQ ACCORDION
+     ========================================================================== */
+  function initFaq() {
+    var items = document.querySelectorAll('.faq-item');
+    items.forEach(function (item) {
+      var btn = item.querySelector('.faq-question');
+      btn.addEventListener('click', function () {
+        var wasOpen = item.classList.contains('is-open');
+        items.forEach(function (i) { i.classList.remove('is-open'); });
+        if (!wasOpen) item.classList.add('is-open');
+      });
+    });
+  }
+
+  /* ==========================================================================
+     TERMINAL — simulated shell
+     ========================================================================== */
+  function initTerminal() {
+    var body = document.getElementById('terminalBody');
+    var input = document.getElementById('terminalInput');
+    var inputRow = input.closest('.terminal-input-row');
+
+    var commands = {
+      help: function () {
+        return [
+          'Available commands:',
+          '  help      show this list',
+          '  boot      simulate a boot sequence',
+          '  version   show the current build version',
+          '  neofetch  show system summary',
+          '  roadmap   show milestone status',
+          '  github    open the repository',
+          '  clear     clear the terminal'
+        ].join('\n');
+      },
+      version: function () { return 'Aethrix OS v0.3.1-alpha (kernel build 2026.06.02)'; },
+      neofetch: function () {
+        return [
+          'aethrix@dev',
+          '------------',
+          'OS: Aethrix OS v0.3.1-alpha',
+          'Kernel: aethrix-core (monolithic, modular)',
+          'Shell: simulated',
+          'Uptime: this session',
+          'Arch: x86_64 / arm64'
+        ].join('\n');
+      },
+      roadmap: function () {
+        return [
+          '[done]    Bootloader',
+          '[done]    Kernel',
+          '[done]    Memory Manager',
+          '[done]    Filesystem',
+          '[active]  Networking',
+          '[planned] Drivers',
+          '[planned] GUI',
+          '[planned] v1.0'
+        ].join('\n');
+      },
+      github: function () {
+        window.open('https://github.com', '_blank', 'noopener');
+        return 'Opening github.com in a new tab...';
+      },
+      boot: function () { return '__BOOT_SEQUENCE__'; },
+      clear: function () { return '__CLEAR__'; }
+    };
+
+    function printLine(text, cls) {
+      var div = document.createElement('div');
+      div.className = 'line' + (cls ? ' ' + cls : '');
+      div.textContent = text;
+      body.insertBefore(div, inputRow);
+    }
+
+    function printRaw(html, cls) {
+      var div = document.createElement('div');
+      div.className = 'line' + (cls ? ' ' + cls : '');
+      div.innerHTML = html;
+      body.insertBefore(div, inputRow);
+    }
+
+    function runBootSequence() {
+      var seq = [
+        'Initializing Bootloader...',
+        'Loading Kernel...',
+        'Memory Manager Ready...',
+        'Filesystem Mounted...',
+        'Drivers Loaded...',
+        'Welcome to Aethrix OS'
+      ];
+      var idx = 0;
+      function step() {
+        if (idx >= seq.length) { body.scrollTop = body.scrollHeight; return; }
+        printLine(seq[idx], idx === seq.length - 1 ? 'out-amber' : 'out-ok');
+        idx++;
+        body.scrollTop = body.scrollHeight;
+        setTimeout(step, 340);
+      }
+      step();
+    }
+
+    function handleCommand(raw) {
+      var cmd = raw.trim().toLowerCase();
+      printRaw('<span class="prompt">user@aethrix:~$</span> ' + escapeHtml(raw));
+      if (cmd === '') { body.scrollTop = body.scrollHeight; return; }
+
+      if (cmd === 'aethrix') {
+        openDevConsole();
+        printLine('Opening developer console...', 'out-amber');
+        body.scrollTop = body.scrollHeight;
+        return;
+      }
+
+      var fn = commands[cmd];
+      if (!fn) {
+        printLine('command not found: ' + cmd + '  (try "help")');
+        body.scrollTop = body.scrollHeight;
+        return;
+      }
+      var result = fn();
+      if (result === '__CLEAR__') {
+        var lines = body.querySelectorAll('.line');
+        lines.forEach(function (l) { l.remove(); });
+        return;
+      }
+      if (result === '__BOOT_SEQUENCE__') {
+        runBootSequence();
+        return;
+      }
+      printLine(result);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        var val = input.value;
+        input.value = '';
+        handleCommand(val);
+      }
+    });
+
+    body.addEventListener('click', function () { input.focus(); });
+  }
+
+  /* ==========================================================================
+     DEV CONSOLE EASTER EGG — typing "aethrix" anywhere on the page
+     ========================================================================== */
+  var devConsoleBuffer = '';
+  function openDevConsole() {
+    document.getElementById('devConsole').classList.add('is-open');
+  }
+  function closeDevConsole() {
+    document.getElementById('devConsole').classList.remove('is-open');
+  }
+  function initDevConsoleTrigger() {
+    window.addEventListener('keydown', function (e) {
+      if (document.activeElement === document.getElementById('terminalInput')) return;
+      if (e.key === 'Escape') { closeDevConsole(); return; }
+      if (e.key.length === 1) {
+        devConsoleBuffer = (devConsoleBuffer + e.key).slice(-7).toLowerCase();
+        if (devConsoleBuffer === 'aethrix') openDevConsole();
+      }
+    });
+    document.getElementById('devConsole').addEventListener('click', closeDevConsole);
+  }
+
+  /* ==========================================================================
+     KONAMI CODE — Developer Mode toast
+     ========================================================================== */
+  function initKonami() {
+    var seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    var pos = 0;
+    var toast = document.getElementById('konamiToast');
+    window.addEventListener('keydown', function (e) {
+      var key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (key === seq[pos]) {
+        pos++;
+        if (pos === seq.length) {
+          pos = 0;
+          toast.classList.add('is-visible');
+          setTimeout(function () { toast.classList.remove('is-visible'); }, 2600);
+        }
+      } else {
+        pos = (key === seq[0]) ? 1 : 0;
+      }
+    });
+  }
+
+  /* ==========================================================================
+     MAGNETIC BUTTONS — subtle pull toward cursor on primary buttons
+     ========================================================================== */
+  function initMagnetic() {
+    if (window.matchMedia('(hover: none)').matches) return;
+    var buttons = document.querySelectorAll('.btn-primary');
+    buttons.forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
+        var r = btn.getBoundingClientRect();
+        var relX = e.clientX - r.left - r.width / 2;
+        var relY = e.clientY - r.top - r.height / 2;
+        btn.style.transform = 'translate(' + relX * 0.12 + 'px,' + (relY * 0.18 - 2) + 'px)';
+      });
+      btn.addEventListener('mouseleave', function () { btn.style.transform = ''; });
+    });
+  }
+
+  /* ==========================================================================
+     HERO LIGHT — mouse-follow glow in hero
+     ========================================================================== */
+  function initHeroLight() {
+    var glow = document.querySelector('.bg-glow');
+    var hero = document.getElementById('home');
+    if (!glow || !hero) return;
+    hero.addEventListener('mousemove', function (e) {
+      var r = hero.getBoundingClientRect();
+      var px = ((e.clientX - r.left) / r.width - 0.5) * 40;
+      glow.style.transform = 'translateX(calc(-50% + ' + px + 'px))';
+    });
+  }
+
+  /* ==========================================================================
+     INIT
+     ========================================================================== */
+  document.addEventListener('DOMContentLoaded', function () {
+    initLoader();
+    initCursor();
+    initParticles();
+    initNav();
+    initReveal();
+    initArchDiagram();
+    initFaq();
+    initTerminal();
+    initDevConsoleTrigger();
+    initKonami();
+    initMagnetic();
+    initHeroLight();
+  });
+})();
+</script>
+</body>
+</html>
