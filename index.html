@@ -3,29 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Aethrix OS — a hobby operating system, built from scratch</title>
-<meta name="description" content="Aethrix OS is a hobby operating system built from scratch. Pre-release, x86_64, open source.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%2212%22 fill=%22%23b8d8c8%22/><path d=%22M16 7 L24 24 L20 24 L16 15 L12 24 L8 24 Z%22 fill=%22%231c1c1e%22/></svg>">
+<title>AethrixOS — a from-scratch x86 operating system</title>
+<meta name="description" content="AethrixOS is a from-scratch x86/x86-64 operating system built by one developer — custom bootloader, kernel, network stack, filesystem and shell. Shared for study, not open source.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect width=%2232%22 height=%2232%22 rx=%2212%22 fill=%22%23ffb000%22/><path d=%22M16 7 L24 24 L20 24 L16 15 L12 24 L8 24 Z%22 fill=%22%231c1c1e%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
 /* ==========================================================================
-   TOKENS — every color, spacing, radius and shadow lives here.
+   TOKENS
    ========================================================================== */
 :root {
-  /* charcoal layers */
   --bg-deep:    #1c1c1e;
   --bg-surface: #242428;
   --bg-raised:  #2c2c32;
   --border:     #3a3a40;
 
-  /* text (all ≥ 4.5:1 on the charcoal layers) */
   --text:       #ececf0;
   --text-muted: #b0b0ba;
 
-  /* pastels — decorative only, never body text */
   --pastel-mint:     #ffb000;
   --pastel-sky:      #b3c4d4;
   --pastel-blush:    #d9b8c4;
@@ -33,16 +30,13 @@
   --pastel-butter:   #e4d4b0;
   --pastel-sage:     #c4d4b8;
 
-  /* clay light/dark edges (neutral, no color glow) */
   --clay-hi:      rgba(255, 255, 255, 0.07);
   --clay-hi-soft: rgba(255, 255, 255, 0.04);
   --clay-lo:      rgba(0, 0, 0, 0.28);
   --clay-drop:    rgba(0, 0, 0, 0.32);
   --clay-hi-btn:  rgba(255, 255, 255, 0.45);
   --clay-lo-btn:  rgba(0, 0, 0, 0.18);
-  --hover-lift:   rgba(255, 255, 255, 0.03);
 
-  /* clay shadows: soft drop + inner highlight + inner shade = "inflated" */
   --clay-raised:
     8px 10px 22px var(--clay-drop),
     inset 3px 3px 6px var(--clay-hi),
@@ -58,38 +52,28 @@
     4px 6px 12px var(--clay-drop),
     inset 3px 3px 6px var(--clay-hi-btn),
     inset -4px -4px 8px var(--clay-lo-btn);
+  --clay-float:
+    18px 22px 40px var(--clay-drop),
+    inset 3px 3px 6px var(--clay-hi),
+    inset -5px -6px 12px var(--clay-lo);
 
-  /* type */
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
-  /* spacing */
-  --s-1: 0.25rem;
-  --s-2: 0.5rem;
-  --s-3: 0.75rem;
-  --s-4: 1rem;
-  --s-5: 1.5rem;
-  --s-6: 2rem;
-  --s-7: 3rem;
-  --s-8: 5rem;
+  --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem;
+  --s-5: 1.5rem; --s-6: 2rem; --s-7: 3rem; --s-8: 5rem;
 
-  /* radii — clay is round */
-  --r-btn:  8px;
-  --r-card: 24px;
-  --r-tile: 20px;
-  --r-pill: 999px;
+  --r-btn: 8px; --r-card: 24px; --r-tile: 20px; --r-pill: 999px;
 
   --measure: 68ch;
-  --page-w: 980px;
+  --page-w: 1040px;
 
   --t-hover: 150ms ease;
   --t-fade:  200ms ease;
   --t-press: 100ms ease;
+  --t-tilt:  150ms ease;
 }
 
-/* ==========================================================================
-   BASE
-   ========================================================================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
@@ -99,13 +83,14 @@ body {
   font-size: 1.0625rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 a { color: inherit; text-decoration: none; }
 ul { list-style: none; }
 button { font: inherit; color: inherit; border: none; background: none; cursor: pointer; }
 
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
-h1 { font-size: clamp(2.5rem, 7vw, 4.25rem); letter-spacing: -0.04em; }
+h1 { font-size: clamp(2.25rem, 6vw, 3.75rem); letter-spacing: -0.04em; }
 h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
 h3 { font-size: 1.0625rem; letter-spacing: -0.01em; font-weight: 600; line-height: 1.3; }
 p  { color: var(--text-muted); max-width: var(--measure); }
@@ -113,14 +98,27 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 
 :focus-visible { outline: 2px solid var(--pastel-sky); outline-offset: 3px; border-radius: var(--r-btn); }
 
-.wrap { max-width: var(--page-w); margin-inline: auto; padding-inline: var(--s-5); }
+.wrap { max-width: var(--page-w); margin-inline: auto; padding-inline: var(--s-5); position: relative; z-index: 1; }
 @media (max-width: 600px) { .wrap { padding-inline: var(--s-4); } }
+
+/* ==========================================================================
+   SPATIAL BACKGROUND
+   ========================================================================== */
+.spatial-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.spatial-bg span {
+  position: absolute; border-radius: 50%;
+  filter: blur(90px); opacity: 0.14;
+}
+.spatial-bg span:nth-child(1) { width: 520px; height: 520px; top: -160px; left: -120px; background: var(--pastel-mint); }
+.spatial-bg span:nth-child(2) { width: 460px; height: 460px; top: 32%; right: -160px; background: var(--pastel-sky); }
+.spatial-bg span:nth-child(3) { width: 480px; height: 480px; bottom: -180px; left: 18%; background: var(--pastel-lavender); }
+@media (prefers-reduced-motion: reduce) { .spatial-bg { opacity: 0.7; } }
 
 /* ==========================================================================
    TERMINAL TRANSCRIPT STRUCTURE
    ========================================================================== */
 .session { padding-block: var(--s-7) var(--s-8); }
-.block { margin-bottom: var(--s-8); }
+.block { margin-bottom: var(--s-8); scroll-margin-top: 120px; }
 .block:last-child { margin-bottom: 0; }
 
 .prompt-line {
@@ -139,10 +137,12 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 /* ==========================================================================
    TOP BAR
    ========================================================================== */
-.bar { padding-block: var(--s-5); }
+.bar { padding-block: var(--s-5); position: sticky; top: 0; z-index: 50; }
 .bar-inner {
   display: flex; align-items: center; justify-content: space-between; gap: var(--s-4);
-  background: var(--bg-raised);
+  background: rgba(36, 36, 40, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-radius: var(--r-pill);
   padding: var(--s-3) var(--s-5);
   box-shadow: var(--clay-small);
@@ -152,7 +152,7 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 .bar nav { display: flex; gap: var(--s-5); font-size: 0.9375rem; }
 .bar nav a { color: var(--text-muted); transition: color var(--t-hover); }
 .bar nav a:hover { color: var(--text); }
-@media (max-width: 640px) { .bar nav { display: none; } }
+@media (max-width: 760px) { .bar nav { display: none; } }
 
 /* ==========================================================================
    BUTTONS
@@ -166,7 +166,7 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 }
 .btn:active { transform: scale(0.98); }
 .btn-primary { background: var(--pastel-mint); color: var(--bg-deep); box-shadow: var(--clay-btn); }
-.btn-primary:hover { background: var(--pastel-sage); }
+.btn-primary:hover { filter: brightness(1.06); }
 .btn-primary:active { box-shadow: var(--clay-pressed); }
 .btn-secondary {
   background: var(--bg-surface); color: var(--pastel-sky);
@@ -174,10 +174,12 @@ p  { color: var(--text-muted); max-width: var(--measure); }
   box-shadow: var(--clay-small);
 }
 .btn-secondary:hover { background: var(--bg-raised); }
+.btn-secondary[disabled] { color: var(--text-muted); cursor: not-allowed; opacity: 0.7; }
+.btn-secondary[disabled]:hover { background: var(--bg-surface); }
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-6); }
 
 /* ==========================================================================
-   HERO / INFO
+   HERO
    ========================================================================== */
 .badge {
   display: inline-flex; align-items: center; gap: var(--s-2);
@@ -196,30 +198,36 @@ p  { color: var(--text-muted); max-width: var(--measure); }
   box-shadow: var(--clay-raised);
 }
 .hero-panel .sub { margin-top: var(--s-4); font-size: 1.1875rem; }
-.spec {
-  margin-top: var(--s-6);
-  display: flex; flex-wrap: wrap; gap: var(--s-3);
-  font-family: var(--font-mono); font-size: 0.8125rem;
-}
-.spec span {
-  background: var(--bg-raised); border-radius: var(--r-pill);
-  padding: 0.35rem 0.9rem; color: var(--text);
-  box-shadow: var(--clay-pressed);
-}
+.spec { margin-top: var(--s-6); display: flex; flex-wrap: wrap; gap: var(--s-3); font-family: var(--font-mono); font-size: 0.8125rem; }
+.spec span { background: var(--bg-raised); border-radius: var(--r-pill); padding: 0.35rem 0.9rem; color: var(--text); box-shadow: var(--clay-pressed); }
 .spec span b { font-weight: 400; color: var(--text-muted); margin-right: var(--s-2); }
 @media (max-width: 600px) { .hero-panel { padding: var(--s-6) var(--s-5); } }
+
+.status-strip { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-5); }
+.status-chip {
+  display: flex; align-items: center; gap: var(--s-2);
+  background: var(--bg-raised); border-radius: 16px; padding: var(--s-2) var(--s-4);
+  box-shadow: var(--clay-pressed); font-size: 0.8125rem;
+}
+.status-chip b { font-family: var(--font-mono); color: var(--text); font-weight: 500; }
 
 /* ==========================================================================
    ABOUT
    ========================================================================== */
-.about {
-  background: var(--bg-surface);
-  border-radius: var(--r-card);
-  padding: var(--s-6);
-  box-shadow: var(--clay-raised);
-}
+.about { background: var(--bg-surface); border-radius: var(--r-card); padding: var(--s-6); box-shadow: var(--clay-raised); }
 .about h2 { margin-bottom: var(--s-4); }
 .about p + p { margin-top: var(--s-4); }
+
+/* ==========================================================================
+   SPATIAL HOVER
+   ========================================================================== */
+.card, .tile, .dl-card {
+  transition: transform var(--t-tilt), box-shadow var(--t-hover), border-color var(--t-hover), background var(--t-hover);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card, .tile, .dl-card { transition: border-color var(--t-hover), background var(--t-hover); }
+}
 
 /* ==========================================================================
    FEATURES
@@ -235,9 +243,8 @@ p  { color: var(--text-muted); max-width: var(--measure); }
   border-radius: var(--r-card);
   padding: var(--s-5);
   box-shadow: var(--clay-raised);
-  transition: border-color var(--t-hover);
 }
-.card:hover { border-color: var(--accent); }
+.card:hover { border-color: var(--accent); box-shadow: var(--clay-float); }
 .card .ico {
   width: 44px; height: 44px; border-radius: 16px;
   background: var(--bg-raised);
@@ -258,14 +265,7 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 /* ==========================================================================
    ARCHITECTURE STRIP
    ========================================================================== */
-.strip {
-  display: flex; gap: var(--s-4);
-  overflow-x: auto;
-  padding: var(--s-3) var(--s-2) var(--s-6);
-  margin-inline: calc(-1 * var(--s-2));
-  scroll-snap-type: x proximity;
-}
-.strip:focus-visible { outline-offset: 0; }
+.strip { display: flex; gap: var(--s-4); overflow-x: auto; padding: var(--s-3) var(--s-2) var(--s-6); margin-inline: calc(-1 * var(--s-2)); scroll-snap-type: x proximity; }
 .strip::-webkit-scrollbar { height: 8px; }
 .strip::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: var(--r-pill); }
 .strip::-webkit-scrollbar-thumb { background: var(--border); border-radius: var(--r-pill); }
@@ -273,19 +273,19 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 .tile {
   --accent: var(--pastel-mint);
   position: relative;
-  flex: 0 0 168px;
+  flex: 0 0 176px;
   scroll-snap-align: start;
   background: var(--bg-surface);
   border-top: 2px solid var(--accent);
   border-radius: var(--r-tile);
   padding: var(--s-5) var(--s-4);
   box-shadow: var(--clay-raised);
-  transition: background var(--t-hover);
   cursor: default;
 }
-.tile:hover, .tile:focus-visible { background: var(--bg-raised); }
+.tile:hover, .tile:focus-visible { background: var(--bg-raised); box-shadow: var(--clay-float); }
 .tile .n { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-muted); display: block; margin-bottom: var(--s-2); }
 .tile .nm { font-weight: 600; font-size: 1rem; }
+.tile .st { display: inline-block; margin-top: var(--s-2); font-size: 0.75rem; font-family: var(--font-mono); color: var(--accent); }
 .tile .tip {
   position: absolute; left: 50%; bottom: calc(100% + var(--s-2));
   transform: translateX(-50%);
@@ -306,76 +306,107 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 /* ==========================================================================
    ROADMAP
    ========================================================================== */
-.cols { display: grid; gap: var(--s-5); grid-template-columns: repeat(3, 1fr); align-items: start; }
-@media (max-width: 860px) { .cols { grid-template-columns: 1fr; } }
-.col {
-  background: var(--bg-surface);
-  border-radius: var(--r-card);
-  padding: var(--s-5);
-  box-shadow: var(--clay-raised);
+.rm-status { display: grid; gap: var(--s-4); grid-template-columns: repeat(3, 1fr); margin-bottom: var(--s-6); }
+@media (max-width: 760px) { .rm-status { grid-template-columns: 1fr; } }
+.rm-box { background: var(--bg-surface); border-radius: var(--r-tile); padding: var(--s-4) var(--s-5); box-shadow: var(--clay-raised); }
+.rm-box span.lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+.rm-box .v { display: block; margin-top: var(--s-2); font-family: var(--font-mono); font-weight: 600; font-size: 1.0625rem; }
+.rm-box p { font-size: 0.875rem; margin-top: var(--s-1); }
+
+.timeline { background: var(--bg-surface); border-radius: var(--r-card); box-shadow: var(--clay-raised); padding: var(--s-5); overflow-x: auto; margin-bottom: var(--s-5); }
+.trow { display: grid; grid-template-columns: 90px 1fr 110px 140px; gap: var(--s-3); align-items: center; padding: var(--s-3) var(--s-2); border-radius: 12px; min-width: 560px; }
+.trow.head { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.trow:not(.head):hover { background: var(--bg-raised); }
+.trow .tv { font-family: var(--font-mono); font-weight: 600; }
+.trow .tn { font-size: 0.9375rem; }
+.trow .tt { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-muted); }
+.trow .ts { display: flex; align-items: center; gap: var(--s-2); font-size: 0.8125rem; }
+.dot { flex: 0 0 10px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--pastel-sky); background: transparent; }
+.dot.done { background: var(--pastel-mint); border-color: var(--pastel-mint); }
+.dot.half { background: linear-gradient(90deg, var(--pastel-mint) 50%, transparent 50%); border-color: var(--pastel-mint); }
+.dot.target { background: var(--pastel-sky); border-color: var(--pastel-sky); }
+
+.disclosures { display: grid; gap: var(--s-4); margin-bottom: var(--s-5); }
+details.dsc { background: var(--bg-surface); border-radius: var(--r-tile); box-shadow: var(--clay-raised); overflow: hidden; }
+details.dsc summary {
+  cursor: pointer; list-style: none; padding: var(--s-4) var(--s-5);
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 600; font-size: 0.9375rem;
 }
-.col-label {
-  display: inline-block;
-  background: var(--accent);
-  color: var(--bg-deep);
-  font-weight: 600; font-size: 0.875rem;
-  padding: 0.3rem 1rem; border-radius: var(--r-pill);
-  box-shadow: var(--clay-btn);
-  margin-bottom: var(--s-4);
-}
-.col-note { font-size: 0.875rem; margin-bottom: var(--s-4); }
-.col-alpha { --accent: var(--pastel-mint); }
-.col-beta  { --accent: var(--pastel-butter); }
-.col-one   { --accent: var(--pastel-lavender); }
-.rows { display: flex; flex-direction: column; gap: var(--s-3); }
-.row {
-  display: flex; align-items: center; gap: var(--s-3);
-  background: var(--bg-raised);
-  border-radius: 16px;
-  padding: var(--s-3) var(--s-4);
-  font-size: 0.9375rem;
-  box-shadow: var(--clay-pressed);
-}
-.dot {
-  flex: 0 0 12px; height: 12px; border-radius: 50%;
-  border: 2px solid var(--accent);
-  background: transparent;
-}
-.dot.done { background: var(--accent); }
-.dot.half { background: linear-gradient(90deg, var(--accent) 50%, transparent 50%); }
-.legend { display: flex; flex-wrap: wrap; gap: var(--s-5); font-size: 0.875rem; color: var(--text-muted); margin-top: var(--s-5); }
-.legend span { display: inline-flex; align-items: center; gap: var(--s-2); --accent: var(--pastel-sky); }
+details.dsc summary::-webkit-details-marker { display: none; }
+details.dsc summary .arr { font-family: var(--font-mono); color: var(--pastel-mint); transition: transform var(--t-hover); }
+details.dsc[open] summary .arr { transform: rotate(90deg); }
+.dsc-body { padding: 0 var(--s-5) var(--s-5); }
+.dsc-body .grp { margin-bottom: var(--s-4); }
+.dsc-body .grp:last-child { margin-bottom: 0; }
+.dsc-body .grp h4 { font-size: 0.875rem; color: var(--pastel-mint); margin-bottom: var(--s-2); font-family: var(--font-mono); font-weight: 500; }
+.dsc-body ul { display: flex; flex-direction: column; gap: var(--s-1); }
+.dsc-body li { position: relative; padding-left: var(--s-4); font-size: 0.875rem; color: var(--text-muted); }
+.dsc-body li::before { content: ''; position: absolute; left: 0; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: var(--border); }
+
+.rm-extra { display: grid; gap: var(--s-4); grid-template-columns: 1fr 1fr; }
+@media (max-width: 760px) { .rm-extra { grid-template-columns: 1fr; } }
+.rm-extra .pane { background: var(--bg-surface); border-radius: var(--r-tile); padding: var(--s-5); box-shadow: var(--clay-raised); }
+.rm-extra .pane h4 { font-size: 0.9375rem; margin-bottom: var(--s-3); }
+.cc-row { display: flex; gap: var(--s-3); padding-block: var(--s-2); border-bottom: 1px solid var(--border); font-size: 0.875rem; }
+.cc-row:last-child { border-bottom: none; }
+.cc-row b { flex: 0 0 120px; color: var(--text); font-weight: 600; }
+.cc-row span { color: var(--text-muted); }
+.contracts li { position: relative; padding-left: var(--s-4); font-size: 0.875rem; color: var(--text-muted); margin-bottom: var(--s-2); }
+.contracts li::before { content: ''; position: absolute; left: 0; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: var(--pastel-mint); }
+.rm-note { font-size: 0.875rem; margin-top: var(--s-5); }
 
 /* ==========================================================================
-   DOWNLOAD
+   DOWNLOADS
    ========================================================================== */
-.dl {
-  background: var(--bg-surface);
+.dl-grid { display: grid; gap: var(--s-5); grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.dl-card {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-card);
+  padding: var(--s-5); box-shadow: var(--clay-raised); display: flex; flex-direction: column;
+}
+.dl-card:hover { border-color: var(--pastel-mint); box-shadow: var(--clay-float); }
+.dl-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-3); margin-bottom: var(--s-3); }
+.dl-ver { font-family: var(--font-mono); font-weight: 600; font-size: 1.125rem; }
+.dl-arch { font-size: 0.8125rem; color: var(--text-muted); margin-top: var(--s-1); }
+.pill { display: inline-flex; padding: 0.25rem 0.75rem; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.pill.available { background: var(--pastel-mint); color: var(--bg-deep); }
+.pill.soon { background: var(--bg-raised); color: var(--text-muted); border: 1px solid var(--border); box-shadow: var(--clay-pressed); }
+.dl-note { font-size: 0.875rem; margin-bottom: var(--s-4); }
+.dl-facts { display: flex; flex-direction: column; gap: var(--s-2); margin-bottom: var(--s-4); }
+.dl-fact { display: flex; justify-content: space-between; gap: var(--s-3); background: var(--bg-raised); border-radius: 12px; padding: var(--s-2) var(--s-3); box-shadow: var(--clay-pressed); font-size: 0.8125rem; }
+.dl-fact span:first-child { color: var(--text-muted); }
+.dl-fact span:last-child { font-family: var(--font-mono); overflow-wrap: anywhere; text-align: right; }
+.dl-card .btn { margin-top: auto; width: 100%; }
+.dl-hash { margin-top: var(--s-3); }
+.dl-hash span { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: var(--s-1); }
+.dl-hash code { display: block; overflow-x: auto; background: var(--bg-raised); border-radius: 12px; padding: var(--s-2) var(--s-3); font-family: var(--font-mono); font-size: 0.75rem; box-shadow: var(--clay-pressed); }
+
+.dl-ghost {
+  border: 1.5px dashed var(--border);
   border-radius: var(--r-card);
-  padding: var(--s-6);
-  box-shadow: var(--clay-raised);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: var(--s-2); padding: var(--s-6) var(--s-5);
+  color: var(--text-muted); min-height: 220px;
 }
-.dl-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-5); }
-.dl-head p { font-size: 0.9375rem; margin-top: var(--s-1); }
-.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--s-4); margin-top: var(--s-6); }
-.fact { background: var(--bg-raised); border-radius: 16px; padding: var(--s-3) var(--s-4); box-shadow: var(--clay-pressed); }
-.fact span { display: block; font-size: 0.8125rem; color: var(--text-muted); }
-.fact strong { font-family: var(--font-mono); font-weight: 500; font-size: 0.9375rem; overflow-wrap: anywhere; }
-.hash { margin-top: var(--s-4); }
-.hash span { display: block; font-size: 0.8125rem; color: var(--text-muted); margin-bottom: var(--s-1); }
-.hash code {
-  display: block; overflow-x: auto;
-  background: var(--bg-raised); border-radius: 16px;
-  padding: var(--s-3) var(--s-4);
-  font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text);
-  box-shadow: var(--clay-pressed);
+.dl-ghost .plus {
+  width: 40px; height: 40px; border-radius: 50%; border: 1.5px dashed var(--border);
+  display: grid; place-items: center; font-size: 1.25rem; color: var(--pastel-mint);
 }
-.notes { margin-top: var(--s-6); }
-.notes h3 { margin-bottom: var(--s-3); }
-.notes li { position: relative; padding-left: var(--s-5); color: var(--text-muted); font-size: 0.9375rem; }
-.notes li + li { margin-top: var(--s-2); }
-.notes li::before { content: ''; position: absolute; left: 0; top: 0.6em; width: 8px; height: 8px; border-radius: 50%; background: var(--pastel-mint); }
-[hidden] { display: none !important; }
+.dl-ghost h3 { color: var(--text-muted); font-size: 0.9375rem; }
+.dl-ghost p { font-size: 0.8125rem; max-width: 24ch; }
+
+.dl-license-note { font-size: 0.875rem; margin-top: var(--s-5); }
+
+/* ==========================================================================
+   LICENSE
+   ========================================================================== */
+.license-panel { background: var(--bg-surface); border-radius: var(--r-card); padding: var(--s-6); box-shadow: var(--clay-raised); }
+.license-panel h2 { margin-bottom: var(--s-4); }
+.license-panel p + p { margin-top: var(--s-3); }
+.license-panel ul { margin-top: var(--s-3); display: flex; flex-direction: column; gap: var(--s-2); }
+.license-panel li { position: relative; padding-left: var(--s-4); font-size: 0.9375rem; color: var(--text-muted); }
+.license-panel li::before { content: ''; position: absolute; left: 0; top: 0.6em; width: 5px; height: 5px; border-radius: 50%; background: var(--pastel-mint); }
+.license-disclaimer { font-size: 0.8125rem; margin-top: var(--s-5); padding-top: var(--s-4); border-top: 1px solid var(--border); }
 
 /* ==========================================================================
    DOCS + FOOTER
@@ -399,32 +430,31 @@ a.card p { font-size: 0.875rem; }
 .foot-inner a:hover { color: var(--pastel-sky); }
 .foot-links { display: flex; gap: var(--s-5); flex-wrap: wrap; }
 
-/* ==========================================================================
-   REDUCED MOTION
-   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .fade { opacity: 1; transition: none; }
-  .btn, .card, .tile, .tile .tip, .bar nav a, .foot-inner a { transition: none; }
+  .btn, .card, .tile, .tile .tip, .bar nav a, .foot-inner a, .dl-card { transition: none; }
   .btn:active { transform: none; }
 }
 </style>
 </head>
 <body>
 
+<div class="spatial-bg" aria-hidden="true"><span></span><span></span><span></span></div>
+
 <header class="bar">
   <div class="wrap">
     <div class="bar-inner">
-      <a href="#info" class="brand" aria-label="Aethrix OS home">
+      <a href="#info" class="brand" aria-label="AethrixOS home">
         <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4 L27 27 L21.5 27 L16 15.5 L10.5 27 L5 27 Z"/></svg>
-        Aethrix OS
+        AethrixOS
       </a>
       <nav aria-label="Sections">
         <a href="#features">Features</a>
         <a href="#architecture">Architecture</a>
         <a href="#roadmap">Roadmap</a>
-        <a href="#downloads">Download</a>
-        <a href="#docs">Docs</a>
+        <a href="#downloads">Downloads</a>
+        <a href="#license">License</a>
       </nav>
     </div>
   </div>
@@ -436,14 +466,19 @@ a.card p { font-size: 0.875rem; }
   <section class="block fade" id="info">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --info</span></p>
     <div class="hero-panel">
-      <div class="badge"><i aria-hidden="true"></i>v0.0.1-beta · active development</div>
-      <h1>A hobby operating system, built from scratch.</h1>
-      <p class="sub">Aethrix is a small kernel, a bootloader and a shell, written from first principles so every decision can be read and questioned. It is early, and it says so.</p>
+      <div class="badge"><i aria-hidden="true"></i>v0.1.0 — 32-bit and 64-bit builds available</div>
+      <h1>A from-scratch x86 operating system, built one commit at a time.</h1>
+      <p class="sub">Custom bootloader, kernel, network stack, filesystem and shell — no Linux, no BSD, no borrowed kernel. A solo project with a public roadmap, and dates that slip in public too.</p>
       <div class="spec" aria-label="System summary">
-        <span><b>version</b>0.0.1-beta</span>
-        <span><b>arch</b>x86_64</span>
-        <span><b>license</b>MIT</span>
+        <span><b>latest</b>v0.1.0</span>
+        <span><b>arch</b>x86 (32-bit) &amp; x86-64 (64-bit)</span>
+        <span><b>license</b>Study-only, not open source</span>
         <span id="starsChip" hidden><b>stars</b><em id="starsVal" style="font-style:normal"></em></span>
+      </div>
+      <div class="status-strip">
+        <div class="status-chip"><i class="dot done"></i>32-bit <b>v0.1.0</b></div>
+        <div class="status-chip"><i class="dot done"></i>64-bit <b>v0.1.0</b></div>
+        <div class="status-chip"><i class="dot"></i>Next <b>v0.2.0</b></div>
       </div>
       <div class="btn-row">
         <a href="#downloads" class="btn btn-primary">Download</a>
@@ -457,8 +492,8 @@ a.card p { font-size: 0.875rem; }
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --about</span></p>
     <div class="about">
       <h2>Not a distribution. A foundation.</h2>
-      <p>Most "new" operating systems are Linux with a different wallpaper. Aethrix is not that. The bootloader, memory manager and scheduler are original code, not a fork.</p>
-      <p>That also means it is small, rough, and only runs in a virtual machine for now.</p>
+      <p>Most "new" operating systems are Linux with a different wallpaper. AethrixOS is not that. The bootloader, kernel, network stack, filesystem and shell are original code — no forked kernel, nothing borrowed.</p>
+      <p>It's shared publicly for study and experimentation, not as an open-source project. See the license below before you redistribute anything.</p>
     </div>
   </section>
 
@@ -470,32 +505,32 @@ a.card p { font-size: 0.875rem; }
       <div class="card c1">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M5 4v16M5 4l14 8-14 8"/></svg></div>
         <h3>Custom bootloader</h3>
-        <p>Two-stage boot into protected mode.</p>
+        <p>Two-stage boot, 16 → 32-bit shipped. The 32 → 64-bit long-mode chain is in progress.</p>
       </div>
       <div class="card c2">
         <div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
-        <h3>Kernel</h3>
-        <p>Monolithic core with a modular subsystem interface.</p>
+        <h3>Kernel core</h3>
+        <p>VGA console, PS/2 keyboard, ATA PIO disk driver, PCI enumeration.</p>
       </div>
       <div class="card c3">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/></svg></div>
-        <h3>Memory manager</h3>
-        <p>Paging and a physical frame allocator.</p>
+        <h3>Full network stack</h3>
+        <p>Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS, and an 11-state TCP implementation.</p>
       </div>
       <div class="card c4">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7c0-1.5 3.6-3 8-3s8 1.5 8 3-3.6 3-8 3-8-1.5-8-3zM4 7v10c0 1.5 3.6 3 8 3s8-1.5 8-3V7"/></svg></div>
-        <h3>Filesystem</h3>
-        <p>Journaled native filesystem, still early.</p>
+        <h3>Flat filesystem</h3>
+        <p>Parent-directory pointers, persisted to disk. Variable-size files land in v0.5.0.</p>
       </div>
       <div class="card c5">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M5 8l4 4-4 4M12 16h7"/></svg></div>
-        <h3>Terminal shell</h3>
-        <p>A basic command prompt to poke around in.</p>
+        <h3>Multi-user shell</h3>
+        <p>~40 built-in commands, root role, multi-user login.</p>
       </div>
       <div class="card c6">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"/></svg></div>
-        <h3>Security as a constraint</h3>
-        <p>Isolation goals shape the design. Not a finished feature.</p>
+        <h3>NIC drivers</h3>
+        <p>RTL8139, AMD PCnet and Intel E1000 — verified end-to-end with real DHCP, DNS and HTTP.</p>
       </div>
     </div>
   </section>
@@ -511,62 +546,123 @@ a.card p { font-size: 0.875rem; }
   <!-- ========================= ROADMAP ========================= -->
   <section class="block fade" id="roadmap">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --roadmap</span></p>
-    <h2 style="margin-bottom:var(--s-5)">Alpha → Beta → 1.0</h2>
-    <div class="cols">
-      <div class="col col-alpha">
-        <span class="col-label">Alpha</span>
-        <ul class="rows">
-          <li class="row"><i class="dot done"></i>Bootloader</li>
-          <li class="row"><i class="dot done"></i>Kernel</li>
-          <li class="row"><i class="dot done"></i>Memory manager</li>
-          <li class="row"><i class="dot half"></i>Filesystem</li>
-        </ul>
+    <h2 style="margin-bottom:var(--s-5)">Release timeline</h2>
+
+    <div class="rm-status">
+      <div class="rm-box"><span class="lbl">32-bit build</span><span class="v">v0.1.0</span><p>Shipped. Verified on QEMU and VirtualBox in protected mode.</p></div>
+      <div class="rm-box"><span class="lbl">64-bit build</span><span class="v">v0.1.0</span><p>Long-mode boot, kernel running on x86-64. Verification ongoing.</p></div>
+      <div class="rm-box"><span class="lbl">Next release</span><span class="v">v0.2.0</span><p>Interrupt infrastructure, password security, real shell permissions.</p></div>
+    </div>
+
+    <div class="timeline" tabindex="0" aria-label="Full version timeline">
+      <div class="trow head"><span>Version</span><span>Name</span><span>Target</span><span>Status</span></div>
+      <div id="timelineBody"></div>
+    </div>
+
+    <div class="disclosures">
+      <details class="dsc" open>
+        <summary>Inside v0.1.0 — shipped <span class="arr">›</span></summary>
+        <div class="dsc-body">
+          <div class="grp"><h4>Kernel core</h4><ul>
+            <li>VGA text console at 0xB8000 — colors, cursor, scroll</li>
+            <li>PS/2 keyboard with shift, control, caps lock</li>
+            <li>ATA PIO disk driver</li>
+            <li>Flat filesystem with parent-directory pointers, persisted to disk</li>
+            <li>Multi-user login with root role, shell with ~40 built-in commands</li>
+            <li>PCI enumeration via 0xCF8/0xCFC</li>
+          </ul></div>
+          <div class="grp"><h4>Network stack</h4><ul>
+            <li>Ethernet II framing and dispatch</li>
+            <li>ARP with cache, request, reply, aging</li>
+            <li>IPv4 receive, send, header checksum, gateway routing</li>
+            <li>ICMP echo request/reply, UDP with pseudo-header checksum</li>
+            <li>DHCPv4 full DORA state machine</li>
+            <li>DNS A-record resolver with TTL cache</li>
+          </ul></div>
+          <div class="grp"><h4>Transport layer</h4><ul>
+            <li>TCP 11-state machine, sequence numbers with wraparound</li>
+            <li>Retransmission queue with exponential backoff</li>
+            <li>FIN/RST handling, TIME_WAIT, 16-entry connection table</li>
+          </ul></div>
+          <div class="grp"><h4>NIC drivers</h4><ul>
+            <li>RTL8139 (QEMU), AMD PCnet (VirtualBox), Intel E1000 (both)</li>
+          </ul></div>
+          <div class="grp"><h4>Verified end-to-end</h4><ul>
+            <li>DHCP lease, DNS resolution of real hostnames</li>
+            <li>ICMP ping to LAN and internet hosts</li>
+            <li>TCP connection to public servers, HTTP GET returning a real page</li>
+          </ul></div>
+        </div>
+      </details>
+
+      <details class="dsc">
+        <summary>64-bit build — same version, different architecture <span class="arr">›</span></summary>
+        <div class="dsc-body">
+          <div class="grp"><ul>
+            <li>Custom MBR bootloader, no GRUB — two-stage 16 → 32 → 64-bit chain</li>
+            <li>A20 enable, GDT setup, page-table construction</li>
+            <li>Identity map of the full 4 GB, covering all MMIO BARs</li>
+            <li>Long mode (IA-32e) entry, 64-bit kernel entry stub</li>
+            <li>Kernel compiled with gcc -m64 -ffreestanding, no libc, no malloc</li>
+            <li>SSE disabled at compile time; CR4.OSFXSR/OSXMMEXCPT enabled for safety</li>
+            <li>Boots to login on QEMU and VirtualBox; full network-stack verification is still ongoing</li>
+          </ul></div>
+        </div>
+      </details>
+
+      <details class="dsc">
+        <summary>Inside v0.2.0 — next, planned <span class="arr">›</span></summary>
+        <div class="dsc-body">
+          <div class="grp"><h4>Interrupts</h4><ul>
+            <li>256-entry IDT, stubs for all 32 exceptions and 16 IRQs, PIC remap</li>
+            <li>PIT at 100 Hz, keyboard IRQ1, kernel panic handler with full register dump</li>
+          </ul></div>
+          <div class="grp"><h4>Password security</h4><ul>
+            <li>SHA-256, HMAC-SHA-256, PBKDF2 with 100,000 iterations, per-user salt</li>
+            <li>Disk format bump from AETHRX1 to AETHRX2</li>
+          </ul></div>
+          <div class="grp"><h4>Shell and permissions</h4><ul>
+            <li>UID model, per-file owner and mode, su/sudo/chmod/chown</li>
+            <li>Shell syntax: &amp;&amp;, ||, $VAR, quoting, comments, persistent history</li>
+          </ul></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="rm-extra">
+      <div class="pane">
+        <h4>Cross-cutting work</h4>
+        <div class="cc-row"><b>Security</b><span>Input validation, memory safety, privilege separation, regular audits.</span></div>
+        <div class="cc-row"><b>Testing</b><span>Unit tests, protocol tests, negative tests, fuzzing, benchmarks.</span></div>
+        <div class="cc-row"><b>Documentation</b><span>One document per subsystem, public API and design decision.</span></div>
+        <div class="cc-row"><b>Portability</b><span>Architecture-specific code stays in arch/; everything above is arch-independent.</span></div>
       </div>
-      <div class="col col-beta">
-        <span class="col-label">Beta</span>
-        <p class="col-note">Stable networking, a USB driver framework and a documented syscall surface. The first release suitable for daily experimentation.</p>
-        <ul class="rows">
-          <li class="row"><i class="dot half"></i>Networking stack</li>
-          <li class="row"><i class="dot"></i>USB driver framework</li>
-          <li class="row"><i class="dot"></i>Documented syscall surface</li>
-        </ul>
-      </div>
-      <div class="col col-one">
-        <span class="col-label">1.0</span>
-        <ul class="rows">
-          <li class="row"><i class="dot"></i>GUI compositor</li>
-          <li class="row"><i class="dot"></i>Frozen syscall surface</li>
-          <li class="row"><i class="dot"></i>First stable release</li>
+      <div class="pane">
+        <h4>Design contracts</h4>
+        <ul class="contracts">
+          <li>No libc, no malloc in the kernel — every allocation is static</li>
+          <li>All IPv4 addresses in canonical little-endian form, one representation everywhere</li>
+          <li>Single-threaded kernel, no locks, until the scheduler lands</li>
+          <li>Weak symbol dispatch between protocol layers</li>
+          <li>No dynamic linking, no Python in build steps</li>
         </ul>
       </div>
     </div>
-    <div class="legend" aria-label="Legend">
-      <span><i class="dot done"></i>done</span>
-      <span><i class="dot half"></i>in progress</span>
-      <span><i class="dot"></i>planned</span>
-    </div>
+
+    <p class="rm-note">Dates are targets, not promises — solo-developer pace, one commit at a time.</p>
   </section>
 
   <!-- ========================= DOWNLOADS ========================= -->
   <section class="block fade" id="downloads">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --download</span></p>
-    <h2 style="margin-bottom:var(--s-5)">Beta pre-releases</h2>
-    <div class="dl">
-      <div class="dl-head">
-        <div>
-          <h3 style="font-size:1.375rem">AethrixOS Beta 0.0.1</h3>
-          <p>Pre-release. Runs in QEMU and most hypervisors.</p>
-        </div>
-        <a id="isoBtn" href="#" class="btn btn-primary" download>Download ISO</a>
-      </div>
-      <div class="facts" id="facts"></div>
-      <div class="hash" id="hashBox" hidden>
-        <span>SHA256</span>
-        <code id="hashVal"></code>
-      </div>
-      <div class="notes" id="notesBox" hidden>
-        <h3>Release notes</h3>
-        <ul id="notesList"></ul>
+    <h2 style="margin-bottom:var(--s-2)">Downloads</h2>
+    <p class="dl-license-note">Shared for study and personal experimentation under the AethrixOS Study License — see below before redistributing anything.</p>
+    <div class="dl-grid" id="dlGrid" style="margin-top:var(--s-5)">
+      <!-- release cards injected here -->
+      <div class="dl-ghost">
+        <div class="plus" aria-hidden="true">+</div>
+        <h3>More builds coming</h3>
+        <p>ARM and other architectures will land here as they ship.</p>
       </div>
     </div>
   </section>
@@ -578,7 +674,26 @@ a.card p { font-size: 0.875rem; }
       <a class="card c1" href="https://github.com/AethrixOS/AethrixOS" target="_blank" rel="noopener"><h3>Getting started</h3><p>Toolchain and first boot in QEMU.</p></a>
       <a class="card c2" href="https://github.com/AethrixOS/AethrixOS" target="_blank" rel="noopener"><h3>Kernel notes</h3><p>Scheduler and memory model.</p></a>
       <a class="card c3" href="https://github.com/AethrixOS/AethrixOS" target="_blank" rel="noopener"><h3>Syscalls</h3><p>The current, unstable interface.</p></a>
-      <a class="card c4" href="https://github.com/AethrixOS/AethrixOS" target="_blank" rel="noopener"><h3>Contributing</h3><p>Style and how patches are reviewed.</p></a>
+      <a class="card c4" href="https://github.com/AethrixOS/AethrixOS" target="_blank" rel="noopener"><h3>Build from source</h3><p>Clone, build and boot it yourself, for study.</p></a>
+    </div>
+  </section>
+
+  <!-- ========================= LICENSE ========================= -->
+  <section class="block fade" id="license">
+    <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --license</span></p>
+    <div class="license-panel">
+      <h2>AethrixOS Study License</h2>
+      <p>AethrixOS is shared publicly so people can read the source, build it, and learn from it. It is not released under an open-source license, and it is not open source.</p>
+      <p>By downloading or using AethrixOS, you agree to the following:</p>
+      <ul>
+        <li>You may read, build and run AethrixOS for personal, educational and non-commercial study.</li>
+        <li>You may not redistribute the source code or any compiled ISO, in whole or in part, on another site, repository or package index.</li>
+        <li>You may not use AethrixOS, or code derived from it, in a commercial product or service.</li>
+        <li>You may not remove or alter this license when sharing screenshots, writeups or excerpts for educational discussion.</li>
+        <li>All rights not explicitly granted here are reserved by the author.</li>
+      </ul>
+      <p>If you want to use AethrixOS outside these terms — commercially, or to redistribute it — contact the author first.</p>
+      <p class="license-disclaimer">This is a plain-language description of the project's terms, written by the author, not a lawyer. If you need this license to be legally binding or enforceable, have it reviewed by a lawyer before relying on it.</p>
     </div>
   </section>
 
@@ -587,10 +702,10 @@ a.card p { font-size: 0.875rem; }
 <footer class="foot">
   <div class="wrap">
     <div class="foot-inner">
-      <span>© 2026 Aethrix OS · MIT license</span>
+      <span>© 2026 AethrixOS · Study License, not open source</span>
       <div class="foot-links">
         <a href="https://github.com/AethrixOS/AethrixOS" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://github.com/AethrixOS/AethrixOS/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+        <a href="#license">License</a>
         <a href="https://github.com/AethrixOS/AethrixOS/issues" target="_blank" rel="noopener">Contact</a>
       </div>
     </div>
@@ -601,31 +716,20 @@ a.card p { font-size: 0.875rem; }
 (function () {
   "use strict";
 
-  /* ------------------------------------------------------------------
-     RELEASE CONFIG — fill in the real values from your latest build.
-     Any empty value is left out of the page entirely (no placeholders).
-     ------------------------------------------------------------------ */
-  var RELEASE = {
-    file:   'AethrixOS-Beta-0.0.1.iso',
-    date:   '',   // e.g. '2026-09-14' — date of your latest commit/build
-    size:   '',   // e.g. '38.4 MB' — real ISO size
-    sha256: '',   // real hash: sha256sum AethrixOS-Beta-0.0.1.iso
-    notes:  [     // only things you have seen working when booting in QEMU
-      // 'Boots to a shell prompt in QEMU',
-    ]
-  };
-  var REPO = 'AethrixOS/AethrixOS';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Architecture strip */
+  /* ------------------------------------------------------------------
+     ARCHITECTURE STRIP
+     ------------------------------------------------------------------ */
   var layers = [
-    ['Bootloader', 'Two-stage boot, hands off to protected mode.'],
-    ['Kernel', 'Syscalls and subsystem contracts.'],
-    ['Memory manager', 'Paging and physical frame allocation.'],
-    ['Scheduler', 'Decides which task runs next.'],
-    ['Filesystem', 'Journaled native filesystem.'],
-    ['Drivers', 'Storage, input and display modules.'],
-    ['Networking', 'TCP/IP stack. In progress.'],
-    ['GUI', 'Compositor and windowing. Planned.']
+    ['Bootloader', 'Two-stage, 16→32-bit shipped. 64-bit chain in progress.', 'shipped'],
+    ['Kernel core', 'Console, keyboard, disk I/O, PCI enumeration.', 'shipped'],
+    ['Network stack', 'Ethernet through TCP, DHCP and DNS, verified end-to-end.', 'shipped'],
+    ['Filesystem', 'Flat, persisted to disk. Variable-size files planned.', 'shipped'],
+    ['Shell', '~40 built-in commands, multi-user login.', 'shipped'],
+    ['NIC drivers', 'RTL8139, PCnet, E1000.', 'shipped'],
+    ['Interrupts', 'IDT, IRQs, panic handler — v0.2.0.', 'planned'],
+    ['Memory & processes', 'Paging, ELF loader, scheduler — v0.4.0.', 'planned']
   ];
   var accents = ['mint', 'sky', 'blush', 'lavender', 'butter', 'sage'];
   var strip = document.getElementById('strip');
@@ -635,42 +739,121 @@ a.card p { font-size: 0.875rem; }
     t.tabIndex = 0;
     t.setAttribute('role', 'listitem');
     t.style.setProperty('--accent', 'var(--pastel-' + accents[i % accents.length] + ')');
-    t.innerHTML = '<span class="n">0' + (i + 1) + '</span><span class="nm"></span><span class="tip" role="tooltip"></span>';
+    t.innerHTML = '<span class="n">0' + (i + 1) + '</span><span class="nm"></span><span class="st"></span><span class="tip" role="tooltip"></span>';
     t.querySelector('.nm').textContent = l[0];
+    t.querySelector('.st').textContent = l[2] === 'shipped' ? 'shipped' : 'planned';
     t.querySelector('.tip').textContent = l[1];
     strip.appendChild(t);
   });
 
-  /* Download card: render only known values */
-  var facts = document.getElementById('facts');
-  function addFact(label, value) {
-    if (!value) return;
-    var d = document.createElement('div');
-    d.className = 'fact';
-    var s = document.createElement('span'); s.textContent = label;
-    var b = document.createElement('strong'); b.textContent = value;
-    d.appendChild(s); d.appendChild(b); facts.appendChild(d);
-  }
-  addFact('File', RELEASE.file.split('/').pop());
-  addFact('Architecture', 'x86_64');
-  addFact('Released', RELEASE.date);
-  addFact('Size', RELEASE.size);
-  document.getElementById('isoBtn').setAttribute('href', RELEASE.file);
-  if (RELEASE.sha256) {
-    document.getElementById('hashVal').textContent = RELEASE.sha256;
-    document.getElementById('hashBox').hidden = false;
-  }
-  if (RELEASE.notes.length) {
-    var ul = document.getElementById('notesList');
-    RELEASE.notes.forEach(function (n) {
-      var li = document.createElement('li'); li.textContent = n; ul.appendChild(li);
-    });
-    document.getElementById('notesBox').hidden = false;
-  }
+  /* ------------------------------------------------------------------
+     ROADMAP TIMELINE
+     ------------------------------------------------------------------ */
+  var TIMELINE = [
+    ['v0.1.0', 'Foundation + Network + TCP + Drivers', 'Shipped', 'done', 'Shipped'],
+    ['v0.1.0', '64-bit port (same version, x86-64)', 'Shipped', 'done', 'Shipped'],
+    ['v0.2.0', 'Interrupts + Passwords + Shell', 'Q2 2026', '', 'Planned'],
+    ['v0.3.0', 'Sockets + HTTP', 'Q3 2026', '', 'Planned'],
+    ['v0.4.0', 'Memory management + Processes', 'Q2 2027', '', 'Planned'],
+    ['v0.5.0', 'Storage', 'Q3 2027', '', 'Planned'],
+    ['v0.6.0', 'Peripherals (audio, USB, mouse)', 'Q1 2028', '', 'Planned'],
+    ['v0.7.0', 'Desktop GUI', 'Q3 2028', '', 'Planned'],
+    ['v0.8.0', 'TLS 1.3', 'Q1 2029', '', 'Planned'],
+    ['v0.9.0', 'WiFi framework', 'Q3 2029', '', 'Planned'],
+    ['v0.10.0', 'WPA2 / WPA3', 'Q4 2029', '', 'Planned'],
+    ['v0.11.0', 'Bluetooth', 'Q1 2030', '', 'Planned'],
+    ['v0.12.0', 'Stability push', 'Q2 2030', '', 'Planned'],
+    ['v1.0.0', 'IPv6 / dual-stack', 'Q3 2030', 'target', 'Public target'],
+    ['v1.1.0', 'Compute runtime (FPU, math, SIMD)', 'Q4 2030', '', 'Planned'],
+    ['v1.2.0', 'SDK and packages', 'Q1 2031', '', 'Planned'],
+    ['v1.3.0', 'Speech (STT/TTS)', 'Q3 2031', '', 'Planned'],
+    ['v1.4.0', 'AI assistant', 'Q1 2032', '', 'Planned'],
+    ['v1.5.0', 'Polish', 'Q2 2032', '', 'Planned']
+  ];
+  var tbody = document.getElementById('timelineBody');
+  TIMELINE.forEach(function (r) {
+    var row = document.createElement('div');
+    row.className = 'trow';
+    row.innerHTML =
+      '<span class="tv"></span><span class="tn"></span><span class="tt"></span>' +
+      '<span class="ts"><i class="dot ' + r[3] + '"></i><span></span></span>';
+    row.querySelector('.tv').textContent = r[0];
+    row.querySelector('.tn').textContent = r[1];
+    row.querySelector('.tt').textContent = r[2];
+    row.querySelector('.ts span').textContent = r[4];
+    tbody.appendChild(row);
+  });
 
-  /* Real star count from the GitHub API; hidden if the request fails */
+  /* ------------------------------------------------------------------
+     RELEASES — edit this list as new ISOs ship. Empty fields are
+     simply left off the card, never shown as a placeholder.
+
+     The 'file' values must match the exact filenames of the ISOs
+     sitting next to index.html in the repository root. GitHub Pages
+     serves them from the site root, so the href is a bare filename.
+     ------------------------------------------------------------------ */
+  var RELEASES = [
+    {
+      version: 'v0.1.0',
+      arch: '32-bit · x86 protected mode',
+      available: true,
+      statusLabel: 'Available',
+      file: 'AethrixOS-v0.1.0-32bit_beta.iso',
+      date: '',
+      size: '',
+      sha256: '',
+      note: 'Verified end-to-end on QEMU and VirtualBox — DHCP, DNS, ICMP, TCP and a real HTTP GET.'
+    },
+    {
+      version: 'v0.1.0',
+      arch: '64-bit · x86-64 long mode',
+      available: true,
+      statusLabel: 'Available',
+      file: 'AethrixOS-v0.1.0-64bit_beta.iso',
+      date: '',
+      size: '',
+      sha256: '',
+      note: 'Same version, different architecture. Custom bootloader, long-mode kernel; full network-stack verification is still ongoing.'
+    }
+  ];
+
+  var dlGrid = document.getElementById('dlGrid');
+  var ghost = dlGrid.querySelector('.dl-ghost');
+  RELEASES.slice().reverse().forEach(function (rel) {
+    var card = document.createElement('div');
+    card.className = 'dl-card';
+
+    var facts = '';
+    if (rel.file) facts += '<div class="dl-fact"><span>File</span><span>' + rel.file + '</span></div>';
+    if (rel.date) facts += '<div class="dl-fact"><span>Released</span><span>' + rel.date + '</span></div>';
+    if (rel.size) facts += '<div class="dl-fact"><span>Size</span><span>' + rel.size + '</span></div>';
+
+    var hash = rel.sha256
+      ? '<div class="dl-hash"><span>SHA256</span><code>' + rel.sha256 + '</code></div>'
+      : '';
+
+    var action = rel.available
+      ? '<a class="btn btn-primary" href="' + rel.file + '" download>Download ISO</a>'
+      : '<button class="btn btn-secondary" disabled>' + rel.statusLabel + '</button>';
+
+    card.innerHTML =
+      '<div class="dl-top">' +
+        '<div><div class="dl-ver">' + rel.version + '</div><div class="dl-arch">' + rel.arch + '</div></div>' +
+        '<span class="pill ' + (rel.available ? 'available' : 'soon') + '">' + rel.statusLabel + '</span>' +
+      '</div>' +
+      '<p class="dl-note">' + rel.note + '</p>' +
+      (facts ? '<div class="dl-facts">' + facts + '</div>' : '') +
+      hash +
+      action;
+
+    dlGrid.insertBefore(card, ghost);
+  });
+
+  /* ------------------------------------------------------------------
+     Real star count from the GitHub API; hidden if the request fails
+     ------------------------------------------------------------------ */
   try {
-    fetch('https://api.github.com/repos/' + REPO)
+    fetch('https://api.github.com/repos/AethrixOS/AethrixOS')
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (d && typeof d.stargazers_count === 'number') {
@@ -681,9 +864,27 @@ a.card p { font-size: 0.875rem; }
       .catch(function () {});
   } catch (e) {}
 
-  /* One-time fade-in on scroll (skipped for reduced motion) */
+  /* ------------------------------------------------------------------
+     SPATIAL TILT
+     ------------------------------------------------------------------ */
+  function attachTilt(el) {
+    el.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      var r = el.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width - 0.5;
+      var py = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform = 'perspective(800px) rotateX(' + (py * -5) + 'deg) rotateY(' + (px * 5) + 'deg) translateY(-6px)';
+    });
+    el.addEventListener('pointerleave', function () { el.style.transform = ''; });
+  }
+  if (!reduce) {
+    document.querySelectorAll('.card, .tile, .dl-card').forEach(attachTilt);
+  }
+
+  /* ------------------------------------------------------------------
+     One-time fade-in on scroll
+     ------------------------------------------------------------------ */
   var blocks = document.querySelectorAll('.fade');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce || !('IntersectionObserver' in window)) {
     blocks.forEach(function (b) { b.classList.add('in'); });
   } else {
