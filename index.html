@@ -466,18 +466,18 @@ a.card p { font-size: 0.875rem; }
   <section class="block fade" id="info">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --info</span></p>
     <div class="hero-panel">
-      <div class="badge"><i aria-hidden="true"></i>v0.1.0 — 32-bit and 64-bit builds available</div>
+      <div class="badge"><i aria-hidden="true"></i>v0.1.5 — 32-bit and 64-bit builds available</div>
       <h1>A from-scratch x86 operating system, built one commit at a time.</h1>
       <p class="sub">Custom bootloader, kernel, network stack, filesystem and shell — no Linux, no BSD, no borrowed kernel. A solo project with a public roadmap, and dates that slip in public too.</p>
       <div class="spec" aria-label="System summary">
-        <span><b>latest</b>v0.1.0</span>
+        <span><b>latest</b>v0.1.5</span>
         <span><b>arch</b>x86 (32-bit) &amp; x86-64 (64-bit)</span>
         <span><b>license</b>Study-only, not open source</span>
         <span id="starsChip" hidden><b>stars</b><em id="starsVal" style="font-style:normal"></em></span>
       </div>
       <div class="status-strip">
         <div class="status-chip"><i class="dot done"></i>32-bit <b>v0.1.0</b></div>
-        <div class="status-chip"><i class="dot done"></i>64-bit <b>v0.1.0</b></div>
+        <div class="status-chip"><i class="dot done"></i>64-bit <b>v0.1.5</b></div>
         <div class="status-chip"><i class="dot"></i>Next <b>v0.2.0</b></div>
       </div>
       <div class="btn-row">
@@ -550,7 +550,7 @@ a.card p { font-size: 0.875rem; }
 
     <div class="rm-status">
       <div class="rm-box"><span class="lbl">32-bit build</span><span class="v">v0.1.0</span><p>Shipped. Verified on QEMU and VirtualBox in protected mode.</p></div>
-      <div class="rm-box"><span class="lbl">64-bit build</span><span class="v">v0.1.0</span><p>Long-mode boot, kernel running on x86-64. Verification ongoing.</p></div>
+      <div class="rm-box"><span class="lbl">64-bit build</span><span class="v">v0.1.5</span><p>Long-mode kernel plus GUI. Latest 64-bit ISO.</p></div>
       <div class="rm-box"><span class="lbl">Next release</span><span class="v">v0.2.0</span><p>Interrupt infrastructure, password security, real shell permissions.</p></div>
     </div>
 
@@ -591,6 +591,38 @@ a.card p { font-size: 0.875rem; }
             <li>DHCP lease, DNS resolution of real hostnames</li>
             <li>ICMP ping to LAN and internet hosts</li>
             <li>TCP connection to public servers, HTTP GET returning a real page</li>
+          </ul></div>
+        </div>
+      </details>
+
+      <details class="dsc">
+        <summary>Inside v0.1.5 — 64-bit with GUI <span class="arr">›</span></summary>
+        <div class="dsc-body">
+          <div class="grp"><h4>GUI foundation</h4><ul>
+            <li>VBE 1024×768 framebuffer, dual-mode console (framebuffer or VGA text fallback)</li>
+            <li>PS/2 mouse on IRQ12, 3-byte packet protocol, bitmap arrow cursor</li>
+            <li>Window manager — z-ordered registry, focus, drag, close, minimize, restore</li>
+            <li>Compositor with drop shadows, rounded corners, offscreen render target</li>
+            <li>Wallpaper: procedural landscape fallback, or real photos loaded from disk sectors</li>
+          </ul></div>
+          <div class="grp"><h4>Login screen</h4><ul>
+            <li>Blurred wallpaper background (box blur, single pass at boot)</li>
+            <li>Avatar circle with user initial, username below</li>
+            <li>Translucent password field with amber caret</li>
+            <li>Tab to switch between non-root accounts; root accounts hidden from picker</li>
+            <li>Failed-login lockout, persisted to disk, grows by 60 s per cycle</li>
+          </ul></div>
+          <div class="grp"><h4>Applications</h4><ul>
+            <li>Terminal — shell-in-window, backed by a console sink</li>
+            <li>Editor — full-window text editor, Ctrl+S to save, Ctrl+X to close</li>
+            <li>Files — directory browser, double-click to open, opens files in Editor</li>
+            <li>Settings — General / Display / Network pages, live system values</li>
+            <li>About — version, user, uptime, disk, NIC, crypto self-test status</li>
+          </ul></div>
+          <div class="grp"><h4>Desktop</h4><ul>
+            <li>Sidebar launcher, bottom dock, status widget with date, time, disk, NIC</li>
+            <li>Taskbar for minimized windows, layered above the desktop</li>
+            <li>All panels below normal windows; taskbar stays above</li>
           </ul></div>
         </div>
       </details>
@@ -752,6 +784,7 @@ a.card p { font-size: 0.875rem; }
   var TIMELINE = [
     ['v0.1.0', 'Foundation + Network + TCP + Drivers', 'Shipped', 'done', 'Shipped'],
     ['v0.1.0', '64-bit port (same version, x86-64)', 'Shipped', 'done', 'Shipped'],
+    ['v0.1.5', 'GUI — windows, apps, login, wallpaper', 'Shipped', 'done', 'Shipped'],
     ['v0.2.0', 'Interrupts + Passwords + Shell', 'Q2 2026', '', 'Planned'],
     ['v0.3.0', 'Sockets + HTTP', 'Q3 2026', '', 'Planned'],
     ['v0.4.0', 'Memory management + Processes', 'Q2 2027', '', 'Planned'],
@@ -785,12 +818,8 @@ a.card p { font-size: 0.875rem; }
   });
 
   /* ------------------------------------------------------------------
-     RELEASES — edit this list as new ISOs ship. Empty fields are
-     simply left off the card, never shown as a placeholder.
-
-     The 'file' values must match the exact filenames of the ISOs
-     sitting next to index.html in the repository root. GitHub Pages
-     serves them from the site root, so the href is a bare filename.
+     RELEASES — order matters: the newest goes LAST in this array so
+     it appears FIRST on screen (the array is reversed before render).
      ------------------------------------------------------------------ */
   var RELEASES = [
     {
@@ -814,6 +843,17 @@ a.card p { font-size: 0.875rem; }
       size: '',
       sha256: '',
       note: 'Same version, different architecture. Custom bootloader, long-mode kernel; full network-stack verification is still ongoing.'
+    },
+    {
+      version: 'v0.1.5',
+      arch: '64-bit · x86-64 long mode',
+      available: true,
+      statusLabel: 'Available',
+      file: 'AethrixOS-v0.1.5-64bit_beta.iso',
+      date: '',
+      size: '',
+      sha256: '',
+      note: 'Latest 64-bit build — desktop GUI, window manager, launcher, taskbar, login screen with blur, and five built-in apps.'
     }
   ];
 
