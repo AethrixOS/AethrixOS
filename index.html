@@ -261,6 +261,7 @@ p  { color: var(--text-muted); max-width: var(--measure); }
 .c4 { --accent: var(--pastel-lavender); }
 .c5 { --accent: var(--pastel-butter); }
 .c6 { --accent: var(--pastel-sage); }
+.feature-note { font-size: 0.875rem; margin-top: calc(-1 * var(--s-3)); margin-bottom: var(--s-5); }
 
 /* ==========================================================================
    ARCHITECTURE STRIP
@@ -365,21 +366,24 @@ details.dsc[open] summary .arr { transform: rotate(90deg); }
   padding: var(--s-5); box-shadow: var(--clay-raised); display: flex; flex-direction: column;
 }
 .dl-card:hover { border-color: var(--pastel-mint); box-shadow: var(--clay-float); }
-.dl-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-3); margin-bottom: var(--s-3); }
+.dl-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--s-3); margin-bottom: var(--s-3); }
 .dl-ver { font-family: var(--font-mono); font-weight: 600; font-size: 1.125rem; }
 .dl-arch { font-size: 0.8125rem; color: var(--text-muted); margin-top: var(--s-1); }
 .pill { display: inline-flex; padding: 0.25rem 0.75rem; border-radius: var(--r-pill); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
 .pill.available { background: var(--pastel-mint); color: var(--bg-deep); }
+.pill.uploaded { background: var(--bg-raised); color: var(--pastel-butter); border: 1px solid var(--pastel-butter); }
+.pill.boot-tested { background: var(--bg-raised); color: var(--pastel-sky); border: 1px solid var(--pastel-sky); }
+.pill.verified { background: var(--pastel-mint); color: var(--bg-deep); }
 .pill.soon { background: var(--bg-raised); color: var(--text-muted); border: 1px solid var(--border); box-shadow: var(--clay-pressed); }
 .dl-note { font-size: 0.875rem; margin-bottom: var(--s-4); }
 .dl-facts { display: flex; flex-direction: column; gap: var(--s-2); margin-bottom: var(--s-4); }
 .dl-fact { display: flex; justify-content: space-between; gap: var(--s-3); background: var(--bg-raised); border-radius: 12px; padding: var(--s-2) var(--s-3); box-shadow: var(--clay-pressed); font-size: 0.8125rem; }
 .dl-fact span:first-child { color: var(--text-muted); }
-.dl-fact span:last-child { font-family: var(--font-mono); overflow-wrap: anywhere; text-align: right; }
+.dl-fact span:last-child { max-width: 72%; min-width: 0; font-family: var(--font-mono); overflow-wrap: anywhere; word-break: break-word; text-align: right; }
 .dl-card .btn { margin-top: auto; width: 100%; }
 .dl-hash { margin-top: var(--s-3); }
 .dl-hash span { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: var(--s-1); }
-.dl-hash code { display: block; overflow-x: auto; background: var(--bg-raised); border-radius: 12px; padding: var(--s-2) var(--s-3); font-family: var(--font-mono); font-size: 0.75rem; box-shadow: var(--clay-pressed); }
+.dl-hash code { display: block; overflow-wrap: anywhere; word-break: break-all; white-space: normal; background: var(--bg-raised); border-radius: 12px; padding: var(--s-2) var(--s-3); font-family: var(--font-mono); font-size: 0.75rem; box-shadow: var(--clay-pressed); }
 
 .dl-ghost {
   border: 1.5px dashed var(--border);
@@ -454,6 +458,7 @@ a.card p { font-size: 0.875rem; }
         <a href="#architecture">Architecture</a>
         <a href="#roadmap">Roadmap</a>
         <a href="#downloads">Downloads</a>
+        <a href="#release-notes">v0.2.0 notes</a>
         <a href="#license">License</a>
       </nav>
     </div>
@@ -466,9 +471,9 @@ a.card p { font-size: 0.875rem; }
   <section class="block fade" id="info">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --info</span></p>
     <div class="hero-panel">
-      <div class="badge"><i aria-hidden="true"></i>v0.1.5 — 32-bit and 64-bit builds available</div>
+      <div class="badge"><i aria-hidden="true"></i>v0.1.5 — latest published ISO · v0.2.0 in preparation</div>
       <h1>A from-scratch x86 operating system, built one commit at a time.</h1>
-      <p class="sub">Custom bootloader, kernel, network stack, filesystem and shell — no Linux, no BSD, no borrowed kernel. A solo project with a public roadmap, and dates that slip in public too.</p>
+      <p class="sub">AethrixOS is my attempt to build an operating system from the ground up: boot path, kernel, drivers, networking, filesystem and shell. Some parts run; others are still experimental. I publish progress and limitations alongside the builds.</p>
       <div class="spec" aria-label="System summary">
         <span><b>latest</b>v0.1.5</span>
         <span><b>arch</b>x86 (32-bit) &amp; x86-64 (64-bit)</span>
@@ -491,9 +496,10 @@ a.card p { font-size: 0.875rem; }
   <section class="block fade" id="about">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --about</span></p>
     <div class="about">
-      <h2>Not a distribution. A foundation.</h2>
-      <p>Most "new" operating systems are Linux with a different wallpaper. AethrixOS is not that. The bootloader, kernel, network stack, filesystem and shell are original code — no forked kernel, nothing borrowed.</p>
-      <p>It's shared publicly for study and experimentation, not as an open-source project. See the license below before you redistribute anything.</p>
+      <h2>Built to learn how the pieces fit together.</h2>
+      <p>I started AethrixOS to understand operating systems by implementing the pieces myself. Its boot path, kernel, drivers, networking, filesystem and shell are developed here rather than built on a Linux or BSD kernel. It is a learning project, not a finished desktop replacement or a production system.</p>
+      <p>This is a solo project built one subsystem at a time. Some components work, others remain experimental, and each release is a snapshot of that progress. The aim is to make the work visible—not to present AethrixOS as finished.</p>
+      <p>Builds are shared publicly for study and experimentation, not as an open-source project. Read the Study License below before redistributing anything.</p>
     </div>
   </section>
 
@@ -501,11 +507,12 @@ a.card p { font-size: 0.875rem; }
   <section class="block fade" id="features">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --features</span></p>
     <h2 style="margin-bottom:var(--s-5)">What actually works today.</h2>
+    <p class="feature-note">Feature maturity varies by release and architecture. A feature listed here is not a guarantee that it works in every ISO or virtual machine.</p>
     <div class="grid">
       <div class="card c1">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M5 4v16M5 4l14 8-14 8"/></svg></div>
         <h3>Custom bootloader</h3>
-        <p>Two-stage boot, 16 → 32-bit shipped. The 32 → 64-bit long-mode chain is in progress.</p>
+        <p>The two-stage 16 → 32-bit path is shipped. The 64-bit startup path and kernel handoff are still being refined and tested.</p>
       </div>
       <div class="card c2">
         <div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
@@ -514,8 +521,8 @@ a.card p { font-size: 0.875rem; }
       </div>
       <div class="card c3">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 8h16M4 12h16M4 16h16"/></svg></div>
-        <h3>Full network stack</h3>
-        <p>Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS, and an 11-state TCP implementation.</p>
+        <h3>Network stack</h3>
+        <p>Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS and an 11-state TCP implementation. Earlier end-to-end checks are documented for the 32-bit line; 64-bit verification remains ongoing.</p>
       </div>
       <div class="card c4">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7c0-1.5 3.6-3 8-3s8 1.5 8 3-3.6 3-8 3-8-1.5-8-3zM4 7v10c0 1.5 3.6 3 8 3s8-1.5 8-3V7"/></svg></div>
@@ -530,7 +537,7 @@ a.card p { font-size: 0.875rem; }
       <div class="card c6">
         <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l7 4v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V7z"/></svg></div>
         <h3>NIC drivers</h3>
-        <p>RTL8139, AMD PCnet and Intel E1000 — verified end-to-end with real DHCP, DNS and HTTP.</p>
+        <p>RTL8139, AMD PCnet and Intel E1000 support is present in the development code. Results still depend on the build and network adapter being tested.</p>
       </div>
     </div>
   </section>
@@ -550,8 +557,8 @@ a.card p { font-size: 0.875rem; }
 
     <div class="rm-status">
       <div class="rm-box"><span class="lbl">32-bit build</span><span class="v">v0.1.0</span><p>Shipped. Verified on QEMU and VirtualBox in protected mode.</p></div>
-      <div class="rm-box"><span class="lbl">64-bit build</span><span class="v">v0.1.5</span><p>Long-mode kernel plus GUI. Latest 64-bit ISO.</p></div>
-      <div class="rm-box"><span class="lbl">Next release</span><span class="v">v0.2.0</span><p>Interrupt infrastructure, password security, real shell permissions.</p></div>
+      <div class="rm-box"><span class="lbl">64-bit build</span><span class="v">v0.1.5</span><p>Published ISO with a GUI. Earlier notes report booting to login; network verification remains ongoing.</p></div>
+      <div class="rm-box"><span class="lbl">Next release</span><span class="v">v0.2.0</span><p>In preparation. The ISO is not published yet; boot testing and subsystem checks for this release are still pending.</p></div>
     </div>
 
     <div class="timeline" tabindex="0" aria-label="Full version timeline">
@@ -699,6 +706,49 @@ a.card p { font-size: 0.875rem; }
     </div>
   </section>
 
+  <!-- ========================= RELEASE NOTES ========================= -->
+  <section class="block fade" id="release-notes">
+    <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --release-notes v0.2.0</span></p>
+    <h2 style="margin-bottom:var(--s-2)">What's new in v0.2.0</h2>
+    <p style="margin-bottom:var(--s-5)">This is a development snapshot, not a verified release. The v0.2.0 ISO has not been uploaded to the repository yet.</p>
+
+    <div class="rm-status">
+      <div class="rm-box">
+        <span class="lbl">Development progress</span>
+        <span class="v">64-bit startup</span>
+        <p>The current focus is continued work on the 64-bit boot path, kernel entry and startup process. No new test result is claimed here without a release-specific record.</p>
+      </div>
+      <div class="rm-box">
+        <span class="lbl">Still being developed</span>
+        <span class="v">Desktop &amp; built-in apps</span>
+        <p>The lock-screen-to-login transition, smoother desktop animations and wallpaper rendering, a customizable dock and working context menu, a native .abd install/remove workflow, and further work on the file manager, filesystem, Jupiter browser and code editor remain in development—not promises that these features are in v0.2.0.</p>
+      </div>
+      <div class="rm-box">
+        <span class="lbl">Testing status</span>
+        <span class="v">v0.2.0 not tested</span>
+        <p>No v0.2.0 artifact is published, so there is no v0.2.0 ISO to boot-test yet. Earlier notes report VirtualBox reaching AethrixOS First Setup and a QEMU log showing the EFI loader handing control to the kernel. These are historical observations, not verification of this release.</p>
+      </div>
+    </div>
+
+    <details class="dsc">
+      <summary>How release status is assigned <span class="arr">›</span></summary>
+      <div class="dsc-body">
+        <div class="grp"><h4>Release stages</h4><ul>
+          <li><b>Preparing:</b> no verified download target; the button stays disabled.</li>
+          <li><b>Uploaded:</b> the artifact and its download URL have been checked. Upload alone says nothing about bootability.</li>
+          <li><b>Boot-tested:</b> the ISO reached a named boot target in a stated environment. This does not mean every feature works.</li>
+          <li><b>Verified:</b> the documented test scope for that specific release passed. The site should state the scope rather than implying universal compatibility.</li>
+        </ul></div>
+        <div class="grp"><h4>What still needs evidence</h4><ul>
+          <li>A v0.2.0 artifact, its actual file size and SHA-256 checksum.</li>
+          <li>A v0.2.0 boot result naming the tested VM or hardware and firmware mode.</li>
+          <li>Separate checks for desktop interaction, package installation/removal, filesystem behavior and the other experimental subsystems before describing them as working.</li>
+        </ul></div>
+      </div>
+    </details>
+    <p class="rm-note">I want the site to document what was tested, what was observed, and what still needs work—not turn a successful startup screen into a blanket compatibility claim.</p>
+  </section>
+
   <!-- ========================= DOCS ========================= -->
   <section class="block fade" id="docs">
     <p class="prompt-line"><span class="ps">$</span> <span class="cmd">aethrix --docs</span></p>
@@ -785,8 +835,8 @@ a.card p { font-size: 0.875rem; }
     ['v0.1.0', 'Foundation + Network + TCP + Drivers', 'Shipped', 'done', 'Shipped'],
     ['v0.1.0', '64-bit port (same version, x86-64)', 'Shipped', 'done', 'Shipped'],
     ['v0.1.5', 'GUI — windows, apps, login, wallpaper', 'Shipped', 'done', 'Shipped'],
-    ['v0.2.0', 'Interrupts + Passwords + Shell', 'Q2 2026', '', 'Planned'],
-    ['v0.3.0', 'Sockets + HTTP', 'Q3 2026', '', 'Planned'],
+    ['v0.2.0', 'Interrupts + Passwords + Shell', 'Past target', 'half', 'In progress'],
+    ['v0.3.0', 'Sockets + HTTP', 'Unscheduled', '', 'Planned after v0.2.0'],
     ['v0.4.0', 'Memory management + Processes', 'Q2 2027', '', 'Planned'],
     ['v0.5.0', 'Storage', 'Q3 2027', '', 'Planned'],
     ['v0.6.0', 'Peripherals (audio, USB, mouse)', 'Q1 2028', '', 'Planned'],
@@ -821,39 +871,67 @@ a.card p { font-size: 0.875rem; }
      RELEASES — order matters: the newest goes LAST in this array so
      it appears FIRST on screen (the array is reversed before render).
      ------------------------------------------------------------------ */
+  /*
+     Release lifecycle:
+     - preparing: no verified download target; keep the button disabled
+     - uploaded: the named artifact and its download URL have been checked
+     - boot-tested: the ISO reached a stated boot target in a named environment
+     - verified: only after the documented checks for that release scope pass
+     Keep the newest entry LAST because the renderer reverses this array.
+     For GitHub Releases, use the exact browser_download_url in downloadUrl.
+  */
   var RELEASES = [
     {
       version: 'v0.1.0',
       arch: '32-bit · x86 protected mode',
       available: true,
-      statusLabel: 'Available',
+      stage: 'boot-tested',
+      statusLabel: 'Boot-tested · scope-limited',
       file: 'AethrixOS-v0.1.0-32bit_beta.iso',
+      downloadUrl: 'AethrixOS-v0.1.0-32bit_beta.iso',
       date: '',
-      size: '',
+      size: '5.35 MiB',
       sha256: '',
-      note: 'Verified end-to-end on QEMU and VirtualBox — DHCP, DNS, ICMP, TCP and a real HTTP GET.'
+      note: 'Earlier test notes report DHCP, DNS, ICMP, TCP and a real HTTP GET on QEMU and VirtualBox. That test scope does not certify every subsystem.'
     },
     {
       version: 'v0.1.0',
       arch: '64-bit · x86-64 long mode',
       available: true,
-      statusLabel: 'Available',
+      stage: 'boot-tested',
+      statusLabel: 'Boot-tested · experimental',
       file: 'AethrixOS-v0.1.0-64bit_beta.iso',
+      downloadUrl: 'AethrixOS-v0.1.0-64bit_beta.iso',
       date: '',
-      size: '',
+      size: '1.75 MiB',
       sha256: '',
-      note: 'Same version, different architecture. Custom bootloader, long-mode kernel; full network-stack verification is still ongoing.'
+      note: 'Earlier project notes report reaching login on QEMU and VirtualBox. Full network-stack verification for this 64-bit build was still ongoing.'
     },
     {
       version: 'v0.1.5',
       arch: '64-bit · x86-64 long mode',
       available: true,
-      statusLabel: 'Available',
+      stage: 'boot-tested',
+      statusLabel: 'Boot-tested · experimental',
       file: 'AethrixOS-v0.1.5-64bit_beta.iso',
+      downloadUrl: 'AethrixOS-v0.1.5-64bit_beta.iso',
+      date: '',
+      size: '1.75 MiB',
+      sha256: '',
+      note: 'Latest published 64-bit ISO. Earlier notes describe the desktop GUI, window manager, launcher, taskbar, login screen with blur and five built-in apps; current compatibility still needs release-specific testing.'
+    },
+    {
+      version: 'v0.2.0',
+      arch: '64-bit · x86-64',
+      available: false,
+      stage: 'preparing',
+      statusLabel: 'Preparing release',
+      file: 'AethrixOS-v0.2.0-64bit_beta.iso',
+      downloadUrl: '',
       date: '',
       size: '',
       sha256: '',
-      note: 'Latest 64-bit build — desktop GUI, window manager, launcher, taskbar, login screen with blur, and five built-in apps.'
+      note: 'The latest planned development build, with continued work on the 64-bit kernel and startup process. Intended for testers and people following the project; the ISO is not published and has not been tested as a v0.2.0 release.'
     }
   ];
 
@@ -872,14 +950,19 @@ a.card p { font-size: 0.875rem; }
       ? '<div class="dl-hash"><span>SHA256</span><code>' + rel.sha256 + '</code></div>'
       : '';
 
-    var action = rel.available
-      ? '<a class="btn btn-primary" href="' + rel.file + '" download>Download ISO</a>'
-      : '<button class="btn btn-secondary" disabled>' + rel.statusLabel + '</button>';
+    var hasDownload = Boolean(rel.available && rel.downloadUrl);
+    var statusClass = rel.stage === 'verified' ? 'verified'
+      : rel.stage === 'boot-tested' ? 'boot-tested'
+      : rel.stage === 'uploaded' && hasDownload ? 'uploaded'
+      : hasDownload ? 'available' : 'soon';
+    var action = hasDownload
+      ? '<a class="btn btn-primary" href="' + rel.downloadUrl + '" download>Download ISO</a>'
+      : '<button class="btn btn-secondary" type="button" disabled>' + rel.statusLabel + '</button>';
 
     card.innerHTML =
       '<div class="dl-top">' +
         '<div><div class="dl-ver">' + rel.version + '</div><div class="dl-arch">' + rel.arch + '</div></div>' +
-        '<span class="pill ' + (rel.available ? 'available' : 'soon') + '">' + rel.statusLabel + '</span>' +
+        '<span class="pill ' + statusClass + '">' + rel.statusLabel + '</span>' +
       '</div>' +
       '<p class="dl-note">' + rel.note + '</p>' +
       (facts ? '<div class="dl-facts">' + facts + '</div>' : '') +
@@ -913,7 +996,7 @@ a.card p { font-size: 0.875rem; }
       var r = el.getBoundingClientRect();
       var px = (e.clientX - r.left) / r.width - 0.5;
       var py = (e.clientY - r.top) / r.height - 0.5;
-      el.style.transform = 'perspective(800px) rotateX(' + (py * -5) + 'deg) rotateY(' + (px * 5) + 'deg) translateY(-6px)';
+      el.style.transform = 'perspective(800px) rotateX(' + (py * -1.5) + 'deg) rotateY(' + (px * 1.5) + 'deg) translateY(-2px)';
     });
     el.addEventListener('pointerleave', function () { el.style.transform = ''; });
   }
